@@ -1,0 +1,367 @@
+2015.050: 3.17
+	- Each input file may be specified with a byte range to read. Useful
+	to limit dataselect's operation to specific parts of files.
+
+2015.030: 3.16
+	- Optimize dealing with duplication when pruning traces by changing
+	findcoverage() to skip trace entries that are already represented
+	in the coverage.
+	- Optimize search for coverage in trimtrace() by avoiding multiple
+	checks on records that have already been removed.  This also fixes
+	a mis-count of removed records.
+
+2014.268: 3.15
+	- Fix loop logic in minsegmentlength() causing segmentation faults.
+
+2014.258: 3.14
+	- Update libmseed to 2.13.
+	- New -outprefix argument to add a prefix to each output record
+	summary line.  Helpful when identifying the potentially mixed output.
+	- Allow '-out --' for sending the output summary to stderr.
+	- Clean up Makefile and src/Makefile, remove gcc specifics and tidy.
+
+2013.329:
+	- Free memory of pruned structures to avoid (mostly inconsequential)
+	memory leaks, best to be clean about this kind of thing (I suppose).
+	- Remember why "write lists" are created and add comments so I stop
+	wondering why.  Hint: it is so the record entries can be sorted
+	together even when they come from different segments/qualities.
+
+2013.280: 3.13
+	- Do not time sort records when only pruning the start/end times (-Pe).
+	The records have already been sorted by time within a segment and if
+	overlap is contained in the data we do not want the records re-sorted.
+
+2013.274: 3.12
+	- Update libmseed to 2.12, including a fix for reconstructing a time
+	series when a positive leap second is noted in the activity flags of
+	the fixed section data header.
+
+2013.056: 3.11
+	- Update libmseed to 2.10, including more time string parsing and more
+	checks for bad data potentially causing a segmentation fault.
+	The bad data check results in the remainder of the channel being skipped.
+
+2012.356: 3.10
+	- Set time correction applied flag when repacking records with previously
+	unapplied time corrections.
+	- Fix missing samples when splitting on day, hour, minute.  Thanks to
+	Peix Fabrice for reporting the issue.
+
+2012.257: 3.9
+	- Update libmseed to 2.7.
+	- Add -Pe option to request pruning at edges only (user specified start 
+	and end) at the sample level.  This will leave overlap within the user
+	specified time window but will trim traces to the window.
+
+2012.135:
+	- Fix error message when skipping unsupported encodings or ASCII.
+
+2012.056: 3.8
+	- Fix crash when minimum-segment-length eliminates all traces and leaves
+	an empty record structure.  Note MSL is tested on quality-specific traces.
+
+2011.363: 3.7
+	- Detect trimming of all samples from a record and skip gracefully (do
+	not report an error), this can legitimately happen when a selected time
+	range is shorter than sample period and no sample exists in the range.
+	- Fix usage of staging buffer (-sb option) when pruning to sample level.
+
+2011.362:
+	- Fix splitting of records on boundaries where the sample is exactly on
+	the boundary.  Thanks to Jean-Baptiste Le Blanc for reporting.
+
+2011.349:
+	- Update to libmseed 2.6.2.
+
+2011.332:
+	- Fix parsing of match/rejection list files, the error only occurred
+	with multiple lines on systems with specific snprintf() behavior.
+
+2011.287: coprocessor day
+	- Optimize search for overlapping traces in findcoverage() by ending
+	search of a segment list after getting to segments that start after
+	the end time of the target, possible because the list is time ordered.
+
+2011.242: 3.6
+	- Modify contents of -out file to include quality code and sample count
+	and to use vertical bars to separate fields.
+
+2011.231:
+	- Add -out option to write a summary of output records to a file.
+	- Skip trimming ASCII encoded data records.
+	- Fix pruning at corner case of selection matching only first or last
+	sample in a record.
+
+2011.222:
+	- Fix pruning in cases involving the global start and end times.
+
+2011.144: 3.5.1
+	- Update to libmseed 2.6.1 with fixes for more graceful handling of bad
+	data and corner-case IRIS archive files.
+	
+2011.057: 3.5
+	- Update to final libmseed 2.6.
+
+2011.039: 3.5rc4
+	- Update to libmseed 2.6rc3.
+
+2011.037: 3.5rc3
+	- Update to libmseed 2.6rc3.
+	- Add minimum segment length (-msl) option.
+	- Add longest segment only (-lso) option.
+
+2011.033: 3.5rc2
+	- Update to libmseed 2.6rc2.
+
+2011.014: 3.5rc1
+	- Add -sb option to specify the size of a staging buffer that will
+	be used to store records to avoid re-reading them for output.
+
+2011.007:
+	- Update libmseed to 2.6rc1.
+
+2010.170: 3.4
+	- Add +o option to append to output file instead of overwriting.
+
+2010.149: 3.3
+	- Skip trimming of records when encoding/packing is not supported.
+	- Add -szs option to skip records containing zero sample count.
+
+2010.104: 3.2
+	- Change integer suffixes added to file names with the -rls option
+	to do zero padding up to 6 digits to facilitate file name sorting.
+
+2010.071: 3.1
+	- Add -rls option to split output files on record length changes by
+	adding integer suffixes to the file names.
+
+2010.068: 3.0
+	- Update libmseed to 2.5.1.
+	- Allow selection file to be "-" to read selection lines from stdin.
+
+2010.064:
+	- Time sort output record list when data has been pruned.
+	- Prune full records when the selected data is duplicated when pruning
+	at the sample level in addition to the record level.
+
+2010.055:
+	- Fix determination of strictest end time when pruning at sample level.
+	- Prune full records when the selected data is duplicated when pruning
+	at the record level.
+	- Use HPTERROR as NULL value for newstart and newend to avoid problems
+	with start/end times at 1970,1,0:0:0 (i.e. hptime == 0).
+
+2010.052:
+	- Add memory allocation tests to better handle out of memory errors.
+
+2010.047:
+	- Update libmseed to 2.5 with a fix for sorting out of time order
+	MSTraceSeg entries (triggered by out of order records).
+
+2010.026:
+	- When unpacking errors occur during writing to the output files skip
+	to the next channel and emit an ERROR message to help identify the 
+	channel.
+
+2010.025:
+	- Fix handling of overlapping selection entries by finding all matching
+	selection entries and calculating maximum extents.
+	- Make msr_unpack() errors for archive writing fatal errors.
+	- Continue after unpacking errors during trimrecord(), include
+	untrimable record in output.
+
+2010.015:
+	- Update libmseed to 2.4.
+	- Add -m option to add a srcname to the selection list, this option 
+	is effectively a globbing version of -M (which does regex matching).
+
+2010.010:
+	- readtraces(): do not recalculate record starttime and only generate
+	ASCII time string when needed for printing as small optimizations.
+	- Fix cleanup calls to use ms_readmsr_main().
+
+2010.007:
+	- Update to libmseed 2.4dev3.
+	- Use ms_readmsr_main() and pass the selections list pointer which
+	will be used to skip sections in packed files (DMC use).
+	- Use the new Selections facility in libmseed and remove the selection
+	file routines, functionality should be identical.
+
+2009.201: 2.1
+	- Update libmseed to version 2.3, fixes bug with corner case trace
+	list sorting.
+
+2009.114: 2.0
+	- Update libmseed to version 2.2.
+
+2009.100: 2.0rc5
+	- Fix selection file criteria population.
+	- Set DataStream idle timeout to 60 seconds.
+
+2009.096: 2.0rc4
+	- Optimize selection file matching logic.
+
+2009.094: 2.0rc3
+	- Initialize fpos variable to avoid spurious initial states.
+
+2009.079: 2.0rc2
+	- Add test for records with no time coverage (e.g. single sample)
+	while pruning whole records.
+
+2009.078: 2.0rc1
+	- Update to libmseed 2.2rc3 and convert trace management to the
+	new MSTraceList, MSTraceID, MSTraceSeg functionality.
+	- Add -s option to specify arbitrary data selection criteria,
+	time windows specified using this option will be used as strict
+	boundaries when pruning at the sample level.
+	- Add file list capability, files specified on the command line
+	starting with '@' are files containing a list of input files.
+	- Remove POD structure processing and related special cases.
+	- Fix pruning of single sample overlaps when overlap is within
+	the time tolerance but not within a sample interval.
+
+2008.346: 1.3
+        - Update to libmseed 2.1.7.
+
+2008.305:
+	- Set open file limit to estimated needs.
+        - Implement max open file limit in dsarchiving.[ch].
+	- Reword usage message regarding start/end times.
+
+2008.219: 1.2
+	- Update libmseed to 2.1.6.
+	- Add SDAY pre-defined archive layout for station-day files.
+
+2008.212:
+	- Fix corner case pruning of exact record boundary matches.
+	- Improve error message when record trim boundaries are bad.
+
+2008.200:
+	- Change total record and byte count variables to 64-bit
+	integers to avoid overflow.
+
+2008.162: 1.1
+	- Update libmseed to 2.1.5.
+	- Use normalized (time correction applied) start time when
+	writing records to user defined archive files.
+	
+2000.067: 1.0
+	- Update man page.
+
+2008.056: 0.9.9
+	- Use defined time-tolerance to determine if a record is
+	completely overlapped or should be trimmed to avoid confusion
+	when trimming sub-sample (impossible) time slices.
+
+2008.042: 0.9.8
+	- Change log message prefix from "ERROR" to "Warning" when
+        files in the request records (of the "h" file) cannot be
+	found during POD processing.
+
+2008.032: 0.9.7
+	- Change timewindowing logic to include a data record when
+	the start or end time is contained within the record.
+
+2008.032: 0.9.6
+	- Return 0 instead of 1 when no data is going to be output
+	but no other problems were encountered.
+	- Add section in man page regarding error messages and exit
+	codes.
+
+2007.353: 0.9.5
+	- Create a special out-of-band MSTrace to hold records with
+	zero sample rate (e.g. LOG, ACE, etc channels).  This avoids
+	the creation of an MSTrace for each record.
+	- Specifically exclude the OOB MSTrace from pruning.
+
+2007.337: 0.9.4
+	- Exit with message when no output options were specified. 
+	- Do not allow deleting of backup files (nobackups) when not
+	replacing input files.
+	- The POD option now implicitly means replacing input files.
+ 
+2007.324: 0.9.3
+	- Fix free'ing of file lists, which fixes POD processing.
+	- Fix coverage detection of exactly matching trace entries.
+	- Fix small mostly unimportant memory leaks.
+
+2007.319: 0.9.2
+	- Modularization of shared functions to reduce confusing
+	dependency on global variables and structures.
+
+2007.318: 0.9.1
+	- Rework pruning process, more comprehensively includes coverage
+	of all overlapping data segments during pruning.
+
+2007.268: 0.9
+	- Diagnostic return values: 0=success 1=error.
+	- Rename global MSTraceGroup from 'mstg' to 'gmstg' to avoid
+	future confusion when reading this code.
+
+2007.267: 0.8
+	- Update to libmseed 2.1.4.
+	- Update logic for "M" quality addition.
+	- Add QCHAN preset layout, like CHAN but adds quality code.
+
+2007.149: 0.7.2
+	- Update to libmseed 2.1.2.
+
+2007.144: 0.7.1
+	- Update to libmseed 2.1.1.
+
+2007.102: 0.7
+	- Update to libmseed 2.1.
+	- Create man page.
+
+2007.100:
+	- Fix start time limit option (-ts) record skipping logic.
+
+2007.031: 0.6
+	- Update to libmseed 2.0 final.
+	- Generalize src/Makefile so user defined CC and CFLAGS are
+	recongized and used.
+
+2007.024: 0.5
+	- Update to libmseed 2.0 test.
+	- Take -lm out of link parameters as it's no longer needed.
+
+2006.362:
+	- reconcile_tracetimes(): minor optimization when searching for
+	first and last records for a given MSTrace by searching from the
+	beginning and end only as far as needed.
+	- reconcile_tracetimes(): use boundary start and end times when
+	they are set instead of the records original start and end times.
+
+2006.354: 0.4
+	- Convert all diagnostic output to use ms_log routines.
+	- Fix reconcile_tracetimes() by resetting first/last pointers.
+
+2006.354: 0.3
+	- Update to libmseed 2.0rc1.
+	- Add -lm to link libraries in src/Makefile.
+
+2006.296: 0.2
+	- Update to libmseed 2.0pre3.
+	- Do not sort MSTraceGroup using the quality indicator so output
+	files include data in time order ungrouped from quality.
+
+2006.235: 0.1
+	- Add -S[dhm] options to split records on day, hour and
+	minute boundaries.
+
+2006.230:
+	- Add regex match/reject options using libc POSIX routines.
+	Include ability to specify files containing regexs if the
+	pattern is specified with a first '@' character.
+	- Rework usage and options quite a bit, remove the -a and
+	options, all record lengths are automatically detected.
+
+2006.224:
+	- Start with msprune 0.9.2.
+	- Add dsarchive.[ch] code from msrouter 1.9.
+	- Rework to write output data independently to a single output
+	file, any number of Archives or replacing original files.
+	- Make pruning optional and use a single variable to control
+	pruning at the record or sample level.
+	- Make replacement of input files controlled via an option.
