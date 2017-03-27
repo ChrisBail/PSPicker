@@ -13,11 +13,11 @@ In details, PSPicker will compute theoretical travel times based on a simple 1D 
 
 # Pre-requist
 
-* [dataselect](dataselect.md)
+* [HYPOCENTER](hypocenter.md)
 * [dataselect](dataselect.md)
 
 # System requirement 
-PSPicker mostly uses Matlab scripts and functions (except [dataselect](dataselect.md) and [dataselect](dataselect.md)). The computational cost of the software is small, an 8 GB internal memory computer will run the program easily. The main script is based on a major loop that processes each events of the catalog one by one and outputs the results directly in a file so that even if it crashes, every event processed is kept into the hard drive. Even if we tried as hard as possible to avoid using the Matlab signal processing toolbox some of these functions are still call by PSPicker. We recommend to use Matlab 2015.
+PSPicker mostly uses Matlab scripts and functions (except [HYPOCENTER](hypocenter.md) and [dataselect](dataselect.md)). The computational cost of the software is small, an 8 GB internal memory computer will run the program easily. The main script is based on a major loop that processes each events of the catalog one by one and outputs the results directly in a file so that even if it crashes, every event processed is kept into the hard drive. Even if we tried as hard as possible to avoid using the Matlab signal processing toolbox some of these functions are still call by PSPicker. We recommend to use Matlab 2015.
 
 # Usage
 
