@@ -7,11 +7,13 @@ The purpose of this cookbook is to describe the workflow for automatic picking r
 
 # Goal
 
-PSPicker is designed to improve location of events by both refining the P and S onset times and integrating more arrivals into the problem. Typically, if the user has poor quality catalog, with coarse phase picking, PSPicker is definitely the right tool!
+PSPicker is designed to improve location of events by both refining the P and S onset times and integrating more arrivals into the problem. Typically, if the user has a poor quality catalog, with unaccurrate picks, PSPicker is definitely the right tool!
 
 In details, PSPicker will compute theoretical travel times based on a simple 1D velocity model, then try to improve/find onsets in the vicinity of absolute theoretical arrival times.
 
 # Pre-requist
+
+[HYPOCENTER](docs/hypocenter.md)
 
 # Usage
 
@@ -47,4 +49,4 @@ Inputs & Outputs Workflow The SDS architecture Working with seiscomp: From xml t
 
 List of programs
 
-[wfs](docs/mainfile.md)
+
