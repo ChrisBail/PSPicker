@@ -13,7 +13,7 @@ In details, PSPicker will compute theoretical travel times based on a simple 1D 
 
 # Pre-requist
 
-[HYPOCENTER](docs/hypocenter.md)
+[HYPOCENTER](hypocenter.md)
 
 # Usage
 
