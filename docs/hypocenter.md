@@ -3,4 +3,4 @@ HYPOCENTER is the location algorithm used in PSPicker, it takes as input:
 * A nordic file .nor with one (or multiple) event(s)
 
 HYPOCENTER is shipped with [SEISAN](http://seisan.info/) and referred as `hyp`. Please refer to the SEISAN installation cookbook. 
-The path where `hyp` is installed is given as an input in the [mainfile.txt](docs/mainfile/md) configuration file
+The path where `hyp` is installed is given as an input in the [mainfile.txt](mainfile.md) configuration file
