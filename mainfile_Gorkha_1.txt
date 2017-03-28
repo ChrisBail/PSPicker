@@ -1,4 +1,4 @@
-# Nordic file or directory containing input nordic files 
+ Nordic file or directory containing input nordic files 
 input_nordic='/home/baillard/Dropbox/_Moi/Projects/Nepal/seiscomp/work/loc_final/'
 
 # SDS path
@@ -13,8 +13,8 @@ sfile_folder='SFILE'
 # Extract time in sec before and after theo arrival times
 extract_time=[20 20]
 
-#Rfreq
-R_freq=[1 10]
+# Frequency used for SNR calculation
+SNR_freq=[1 10]
 
 # Left and Right window for SNR-calculation (sec)
 SNR_wind=[5 1]
