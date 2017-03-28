@@ -1,0 +1,1 @@
+  Compute num_traces
