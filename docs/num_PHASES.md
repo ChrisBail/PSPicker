@@ -1,1 +1,1 @@
-  function to know number of phases
+  function to know number of phases   

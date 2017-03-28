@@ -1,1 +1,1 @@
-  function made to initialize test param strcuture used by pass_SNRTEST
+  function made to initialize test param strcuture used by pass_SNRTEST   

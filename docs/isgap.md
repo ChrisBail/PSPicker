@@ -1,1 +1,1 @@
-  function made to check if gaps exist in the trace
+  function made to check if gaps exist in the trace   

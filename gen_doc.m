@@ -42,7 +42,8 @@ for i =1:numel(fullpath_cell)
     doc_name_full=[doc_dir,'/',function_name_noext,doc_extension];
     
     fic_doc=fopen(doc_name_full,'wt');
-    fprintf(fic_doc,help(function_name_full));
+    help_parag=regexprep(help(function_name_full),'\n','   \n');
+    fprintf(fic_doc,help_parag);
     fclose(fic_doc);
     
 end
