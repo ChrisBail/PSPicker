@@ -20,7 +20,7 @@ SNR_freq=[1 10]
 SNR_wind=[5 1]
 
 # SNR Trace quality threshold
-SNR_quality=5
+SNR_thres=5
 
 # Define if right hand side of S window should be constrained by maximum (1 or 0)
 window_max_S=1
@@ -33,7 +33,7 @@ window_P=[3 3]
 window_S=[4 4]
 
 # Pick SNR threshold (dB) for P quality picking (3 2 1 0)
-SNR_thres=[2 5 9 12] 
+SNR2W=[2 5 9 12] 
 
 # Define minimum number of ampltiudes to compute magnitude
 minphase_amp=3

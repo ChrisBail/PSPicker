@@ -298,8 +298,8 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
         %% Get the weight based on SNR
 
         window_snr=[2 2];
-        LTA_snr=4;
-        STA_snr=1;
+        LTA_snr=PickerParam.SNR_wind(1);
+        STA_snr=PickerParam.SNR_wind(2);
         
         fil_trace_P=filterbutter(3,1,10,rsample,trace_P);
         [snr,max_ind,max_value(j)]=snr_function(abs(fil_trace_P),...
@@ -308,7 +308,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
 
     end
     
-    threshold_snr=2;
+    threshold_snr=PickerParam.SNR2W;
     boolean_snr_P=zeros(numel(DATA_P.RAW),1);
     boolean_snr_P=max_value>=threshold_snr & max_value==max(max_value);
     if ~any(boolean_snr_P)

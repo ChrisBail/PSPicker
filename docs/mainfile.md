@@ -10,3 +10,7 @@ Find below the detailed list of parameters used by PSPicker:
 * **hyp**: specify the location of the HYPOCENTER program “hyp” shipped with SEISAN (it’s basically where you installed SEISAN, but of course it can be somewhere else).
 
 * **sfile_folder**: Directory where all output nordic files re-processed by PSPicker will be stored. There will be one single nordic file per event. Afterwards, all nordic files can be concatenated into one single “phase catalog” file (using a simple cat *.nor).
+
+* **extract_time**: time values [T1 T2] in sec to extract the MSEED file from the SDS. PSPicker will check for the first (Tf) and last arrival times (Tl) (theo) for each event then it will extract between [Tf-T1 Tl+T2]
+
+] 
