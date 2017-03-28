@@ -1,4 +1,4 @@
- Nordic file or directory containing input nordic files 
+# Nordic file or directory containing input nordic files 
 input_nordic='/home/baillard/Dropbox/_Moi/Projects/Nepal/seiscomp/work/loc_final/'
 
 # SDS path
@@ -32,8 +32,13 @@ picking_method='follow'
 window_P=[3 3]
 window_S=[4 4]
 
-# Pick SNR threshold (dB) for P quality picking (3 2 1 0)
-SNR2W=[2 5 9 12] 
+# KURTO to weight conversion for P and S picks (3 2 1 0)
+KURTO2W_P=[1 2 4 10] 
+KURTO2W_S=[1 2 4 10] 
+
+# SNR to weight conversion for P and S picks (3 2 1 0)
+SNR2W_P=[2 5 9 12] 
+SNR2W_S=[2 5 9 12] 
 
 # Define minimum number of ampltiudes to compute magnitude
 minphase_amp=3

@@ -33,38 +33,24 @@ ind_stat=cellfun(@(x) isempty(regexpi(x,'=|#')),A{1});
 cell_para=A{1}(ind_para);
 cell_stat=A{1}(ind_stat);
 
-%%% Eval variables
+%%% Eval variables and put in struct
 
 for i=1:length(cell_para)
-    evalc(cell_para{i});
+    param_line_cell=strsplit(cell_para{i},'=');
+    var_name=param_line_cell{1};
+    var_value=param_line_cell{2};
+    Main.(var_name)=eval(var_value);
 end
 
 %%% Check if paths exist
 
-if ~exist(sds_path,'dir')
-    error('sds path: %s does not exist\n',sds_path)
+warning('off','backtrace')
+if ~exist(Main.sds_path,'dir')
+    warning('sds path: %s does not exist\n',Main.sds_path)
 end
-if ~exist(hyp,'file')
-    error('hyp program: %s does not exist\n',sds_path)
+if ~exist(Main.hyp,'file')
+    warning('hyp program: %s does not exist\n',Main.hyp)
 end
-
-%%% Put in structure
-
-Main.input_nordic=input_nordic;
-Main.SDS_path=sds_path;
-Main.HYP=hyp;
-Main.sfile_folder=sfile_folder;
-Main.Extract_time=extract_time;
-Main.SNR_freq=SNR_freq;
-Main.SNR_wind=SNR_wind;
-Main.SNR_thres=SNR_thres;
-Main.SNR2W=SNR2W;
-Main.Amplitude_remove=Amplitude_remove;
-Main.window_P=window_P;
-Main.window_S=window_S;
-Main.window_max_S=window_max_S;
-Main.picking_method=picking_method;
-Main.minphase_amp=minphase_amp;
 
 %%% Eval station dependent files
 
@@ -96,9 +82,9 @@ for i=1:length(cell_stat)
         type=str_array{2};
         SPEC.channelID=strsplit(str_array{3},',');
         SPEC.F_energy=eval(str_array{4});
-        SPEC.Kurto_F=eval(str_array{5});
-        SPEC.Kurto_W=eval(str_array{6});
-        SPEC.Kurto_S=eval(str_array{7});
+        SPEC.Kurto_F=Main.(str_array{5});
+        SPEC.Kurto_W=Main.(str_array{6});
+        SPEC.Kurto_S=Main.(str_array{7});
         SPEC.Polarity_flag=eval(str_array{8});
         SPEC.Lag=eval(str_array{9});
         SPEC.Energy_recond=eval(str_array{10});
@@ -127,50 +113,5 @@ end
 Main.Station_param=Station_param;
 
 end
-
-% function OUT=get_line(IN,line,format_line)
-% 
-%     clear SPEC
-%     
-%     %%% Split characters
-%     
-%     str_array=strsplit(line,':'); 
-%     
-%     switch format_line
-%         case 'pick'
-%             
-%             %%% Get parameters
-%     
-%             station=str_array{1};
-%             type=str_array{2};
-%             SPEC.channelID=strsplit(str_array{3},',');
-%             SPEC.F_energy=eval(str_array{4});
-%             SPEC.Kurto_F=eval(str_array{5});
-%             SPEC.Kurto_W=eval(str_array{6});
-%             SPEC.Kurto_S=eval(str_array{7});
-%             SPEC.Polarity_flag=eval(str_array{8});
-%             SPEC.Lag=eval(str_array{9});
-%             SPEC.Energy_recond=eval(str_array{10});
-%             SPEC.N_follow=eval(str_array{11});
-%             SPEC.Amplitude=eval(str_array{12});
-%             
-%             IN.(station).pick.(type)=SPEC;
-%             
-%         case 'amp'
-%             
-%             %%% Get parameters
-%     
-%             station=str_array{1};
-%             type=str_array{2};
-%             SPEC.channelID=strsplit(str_array{3},',');
-% 
-%             IN.(station).amp.(type)=SPEC;
-%             
-%     end
-% 
-%     OUT=IN;
-%     
-% end
-
 
 
