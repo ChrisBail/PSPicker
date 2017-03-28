@@ -10,8 +10,9 @@ function Main=readmain(file)
 
 %%% Parameters
 
-num_fields_pick=11;
+num_fields_pick=11;  % number of fields that should be given in the station line
 num_fields_amp=3;
+
 %file='/Users/baillard/_Moi/Projets/Nepal/Picking/mainfile_Gorkha.txt';
 
 %%% Initialize
@@ -54,7 +55,7 @@ Main.SDS_path=sds_path;
 Main.HYP=hyp;
 Main.sfile_folder=sfile_folder;
 Main.Extract_time=extract_time;
-Main.R_freq=R_freq;
+Main.SNR_freq=SNR_freq;
 Main.SNR_wind=SNR_wind;
 Main.SNR_quality=SNR_quality;
 Main.SNR_thres=SNR_thres;

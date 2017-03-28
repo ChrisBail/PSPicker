@@ -1,14 +1,20 @@
-% Refine picks; the program takes an EVENT input (structure), reads the origin and the picks
-% extract the mseed, pick with the kurtosis and relocate the event
-% The output is a theoretical event 
-
-%function S=refine_PICKS()%EVENT,mainfile,flag_plot)
 function S=refine_PICKS(EVENT,mainfile,flag_plot)
 
-clearvars -except EVENT mainfile flag_plot
+% Refine picks
+% The program takes an EVENT input (structure), reads the origin and the picks
+% extract the mseed, pick with the kurtosis and relocate the event
 % 
-% clear all
-% close all
+%  Input: EVENT > EVENT structure (type: struct)
+%         mainfile > main configuration filename (type: str)
+%         flag_plot > flag used in debug mode to plot grap (type: boolean)
+%         
+%  Output:    S > Output EVENT containing new refined picks and new location (type: struct)
+%  
+%  Example:   NEW_EVENT=refine_PICKS(OLD_EVENT,'mainfile.txt',0)
+%  
+
+clearvars -except EVENT mainfile flag_plot
+
 % event_file='/home/baillard/_Moi/Projets/Nepal/Day_119/Try_3/binder/events.txt';
 % mainfile='mainfile_Gorkha.txt';
 % flag_plot=1;
@@ -16,7 +22,6 @@ clearvars -except EVENT mainfile flag_plot
 % EVENT=EVENT(4);
 
 %%% Parameters that shouldn't be changed
-
 
 sds2mseed='./Functions/sds2mseed.sh';
 %event_file='/Users/baillard/_Moi/Projets/Nepal/binder/test_05/events.txt';
@@ -113,7 +118,7 @@ PHASES=EVENT.PHASES;
 DATA=get_SNR(DATA,...
     PickerParam.SNR_wind(1),...
     PickerParam.SNR_wind(2),...
-    PickerParam.R_freq);
+    PickerParam.SNR_freq);
 
 %%% Start loop
 
@@ -196,7 +201,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
     
     for j=1:length(DATA_P.RAW)
         smooth_snr=100;
-        filter_value=PickerParam.R_freq;
+        filter_value=PickerParam.SNR_freq;
         percent_thres=0.4;
         snr=DATA_P.RAW(j).SNR;
         trace=DATA_P.RAW(j).TRACE;
