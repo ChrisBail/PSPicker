@@ -34,7 +34,7 @@ for i =1:numel(fullpath_cell)
     
     %%% Write into api
     
-    str_api=sprintf('[%s](%s%s)\n',function_name,function_name_noext,doc_extension);
+    str_api=sprintf('[%s](%s%s)  \n',function_name,function_name_noext,doc_extension);
     fprintf(fic_api,str_api);
     
     %%% Generate files
