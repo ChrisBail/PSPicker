@@ -457,62 +457,93 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
        
         end
         
-
-       %% Compute Kurtosis for S
-
-
-        [all_mean_M_S,M]=trace2FWkurto(cf_S,rsample,...
+       %%%% Compute Kurtosis 
+       
+       [all_mean_M,M,CF_time]=trace2FWkurto(cf_S,rsample,...
             PickerParam.Station_param.(station).pick.S.Kurto_F,...
             PickerParam.Station_param.(station).pick.S.Kurto_W,...
             1,first_sample_S,last_sample_S);
         
-        if strcmp(picking_method,'follow')
-            %%% Pick the biggest extrema
-            [kurto_modif_S,ind_ext_S,ext_value,disper_S]=follow_extrem(all_mean_M_S,...
-            'mini',...
-            1,...
-            PickerParam.Station_param.(station).pick.S.Kurto_S,...
-            'no-normalize','no-sense');
-        else
-            [~,ind_ext_S]=min(all_mean_M_S);
-        end
-        
-        ind_S=ind_ext_S;
-        
-        %%% Check value
-        
-        if isempty(ind_S)
+        kurto_S=all_mean_M;
+
+    	%%% Pick the onset on CF 
+
+        [ind_pick,vals_kurto]=follow_extrem2(CF_time,...
+             PickerParam.max_drift*rsample,flag_plot);
+
+        if isempty(ind_pick)
+            fprintf(1,'WARNING: not S phase found for station %s\n',station);
             continue
         end
+        
+        %%% Feed pick array
+        
+        ind_S=ind_pick;
 
-        %% Get the weigth
-        
-        quartile_S=quantile(disper_S,4);
-        std_S=quartile_S(1);
-        %std_S=disper_S/rsample;
-        %weight_S=std2weight(std_S,weight_sec_S);
-        %std_S=mean(disper_S);
-        weight_S=kurto2weight(std_S,weight_kurt_S);
-        kurto_S=all_mean_M_S;
-        
-        %%% Do a posteriori check on SNR
+        %%% Compute max SNR
 
         window_snr=[2 2];
-        LTA_snr=4;
-        STA_snr=1;
-        threshold_snr=2;
-        [snr,max_ind,max_value]=snr_function(abs(cf_S),...
-            rsample,LTA_snr,STA_snr,15,...
-            ind_S-window_snr(1)*rsample,ind_S+window_snr(2)*rsample,0);
+        LTA_snr=PickerParam.SNR_wind(1);
+        STA_snr=PickerParam.SNR_wind(2);
+        smooth_snr=5;
 
-        boolean_snr=max_value>=threshold_snr;
-        if ~any(boolean_snr)
-            weight_S=4;
-            ind_S=[];
-        end
+        fil_trace_S=filterbutter(3,PickerParam.SNR_freq(1),PickerParam.SNR_freq(2),rsample,trace_P);
+        [snr,max_ind,max_snr]=snr_function(abs(cf_S),...
+            rsample,LTA_snr,STA_snr,smooth_snr,...
+            ind_S-window_snr(1)*rsample,ind_S+window_snr(2)*rsample,flag_plot);
         
+        max_snr_n=max_snr;
+        
+        %%% Compute max Kurto
+        
+        max_kurto_n=quantile(vals_kurto,4);
     
+        %%% Select best pick based on SNR or KURTO
+
+        if strcmp(PickerParam.weight_switch,'SNR')
+
+            boolean_snr_S=(max_snr_n>=PickerParam.SNR2W_S(1) &...
+                max_snr_n==max(max_snr_n));
+            if ~any(boolean_snr_S)
+                weight_S=4;
+                ind_S=[];
+            else
+                weight_S=get_weight(max(max_snr_n),PickerParam.SNR2W_S);
+                ind_S=ind_Sn(boolean_snr_S);
+            end
+
+        else
+
+            boolean_kurto_S=(max_kurto_n>=PickerParam.KURTO2W_S(1) &...
+                max_kurto_n==max(max_kurto_n));
+            if ~any(boolean_kurto_S)
+                weight_S=4;
+                ind_S=[];
+            else
+                weight_S=get_weight(max(max_kurto_n),PickerParam.KURTO2W_S);
+                ind_S=ind_Sn(boolean_kurto_S);
+            end
+
+        end
+
     end
+    
+    %%%%%%%%%%%%%%
+    %%% Store Picks in Event structure
+    
+    % for P
+    
+    PHASES(ind_Pphase).ARRIVAL=rela2abs(ind_P,t_begin,rsample);
+    PHASES(ind_Pphase).WEIGHT=weight_P;
+    
+    % for S
+    if pick_flag_S==1
+
+        PHASES(ind_Sphase).ARRIVAL=rela2abs(ind_S,t_begin,rsample);
+        PHASES(ind_Sphase).WEIGHT=weight_S;
+        
+    end
+    
   
     %% Figure
 
@@ -596,42 +627,12 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
         
     end
     
-    %%%%%%%%%%%%%%
-    %%% Store Picks in Event structure
-    
-    % for P
-    
-    PHASES(ind_Pphase).ARRIVAL=rela2abs(ind_P,t_begin,rsample);
-    PHASES(ind_Pphase).WEIGHT=weight_P;
-    
-%     i_pick=i_pick+1;
-%     EVENT_PICKS.PHASES.STATION(i_pick,1)={station};
-%     EVENT_PICKS.PHASES.ARRIVAL(i_pick,1)=rela2abs(ind_P,t_begin,rsample);
-%     EVENT_PICKS.PHASES.TYPE(i_pick,1)={'P'};
-%     EVENT_PICKS.PHASES.WEIGHT(i_pick,1)=weight_P;
-   
-    % for S
-    
-    if pick_flag_S==1
-%         i_pick=i_pick+1;
-%         EVENT_PICKS.PHASES.STATION(i_pick,1)={station};
-%         EVENT_PICKS.PHASES.ARRIVAL(i_pick,1)=rela2abs(ind_S,t_begin,rsample);
-%         EVENT_PICKS.PHASES.TYPE(i_pick,1)={'S'};
-%         EVENT_PICKS.PHASES.WEIGHT(i_pick,1)=weight_S;
-        
-        PHASES(ind_Sphase).ARRIVAL=rela2abs(ind_S,t_begin,rsample);
-        PHASES(ind_Sphase).WEIGHT=weight_S;
-        
-    end
-    
-%     if strcmp(station,'KOLL')
-%         disp('sf')
 
-if flag_plot
-    fprintf(1,'Station: %s\n',station);
-    keyboard
-    close all
-end
+    if flag_plot
+        fprintf(1,'Station: %s\n',station);
+        keyboard
+        close all
+    end
 
 end
 
@@ -641,14 +642,11 @@ new_event=comp_THEO(hyp,EVENT);
 new_event.COLOR=[1 0 0];
 S.DATA=DATA;
 S.EVENTS=new_event;
-%plot_DATA(S);
-% 
+
 if flag_plot
     plot_DATA(S);
 end
-    %export_fig 'test_ss' -pdf
-%system(['open test_ss.pdf']);
-%end
+
 
 end
 
