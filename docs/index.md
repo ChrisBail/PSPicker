@@ -27,18 +27,19 @@ The program PSPicker is launched through one single script called `main.m` that 
 
 # Basic worflow
 
-Dwlnm
-where to work
-run
-PSPicker.tar.gz which contains all the internally built functions to run PSPicker. The program can be downloaded at www.test.fr or can be sent to you by contacting baillard@geologie.ens.fr. 3.Installation of software and dependencies 3.1.Installation of PSPicker 1.Go to your desired working directory where you will run PSPicker. For example /home/smith/work/ 2.Copy paste PSPicker.tar.gz into the chosen directory 3.Extract the archive: tar -xvzf PSPicker.tar.gz 4.Start Matlab from the terminal (so that the bash environment is loaded) and go to /home/smith/work/PSPicker/. You will find: ­main.m which is the main script containing the loop ­Functions/ directory that includes all functions called by main.m ­mainfile.txt which is the main configuration file ­stations_PZ.txt that contains Gain and poles and zeros for each channel. ­STATION0.HYP which is the parameter file (containing station coordinates and velocity model) need by HYPOCENTER. 3.2.Installation of SEISAN As stated before, PSPicker uses the HYPOCENTER program delivered by SEISAN to perform inversion. HYPOCENTER, contrary to hypo71, integrates elevation of stations. Please refer to the installation guide delivered with SEISAN to install the software. The HYPOCENTER program is referred as hyp. Please note carefully the path where you installed hyp as it is required in the mainfile.txt configuration file (see section Main configuration file: mainfile.txt).
+Clone the gitbut repository to your computer.   
+Go to your desired working directory where you will run PSPicker. For example /home/smith/work/PSPicker.   
+You will find:  
+* main.m which is the main script containing the loop
+* Functions/ directory that includes all functions called by main.m
+* mainfile.txt which is the main configuration file
+* stations_PZ.txt that contains Gain and poles and zeros for each channel.  
+* STATION0.HYP which is the parameter file (containing station coordinates and velocity model) needed by HYPOCENTER. 
 
-4.
-
-4.3.Main station file: station_PZ.txt 4.4.Main location file: STATION0.HYP This file allows location of events from phase arrivals. It’s the parameter file of HYPOCENTER used by SEISAN, for any details please refer to the the SEISAN user’s guide. As we used HYPOCENTER for primar locations and update of the solutions after refining the picks we need this file in the working directory.
+STATION0.HYP This file allows location of events from phase arrivals. It’s the parameter file of HYPOCENTER used by SEISAN, for any details please refer to the the SEISAN user’s guide. As we used HYPOCENTER for primar locations and update of the solutions after refining the picks we need this file in the working directory.
 
 To sum up, STATION0.HYP regroups geographical locations of all stations of the network (name, lon, lat, altitude, station correction if we have it) and also the 1D velocity model we are using. The way the 1D model is given is really similar to what we have in hypo71 for those who are familiar with it. In details we specify the P-velocity at each user’s specified depth, then we give the Vp/Vs ratio, and then we specify the distance’s based weighting scheme used by the locator. In more simple way, we specify the weights of each arrivals based on the station-epicenter distance, the closer the station is, the more weight we put on the corresponding arrival.
 
-Inputs & Outputs Workflow The SDS architecture Working with seiscomp: From xml to nordic files Main programs
 
 # API description
 
