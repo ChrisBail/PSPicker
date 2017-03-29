@@ -25,12 +25,12 @@ SNR_thres=5
 # Define if right hand side of S window should be constrained by maximum (1 or 0)
 window_max_S=1
 
-# Method for picking ('mini' or 'follow')
-picking_method='follow'
-
-# Windows around P and S picks for refining
+# Windows around P and S picks for refining (sec)
 window_P=[3 3]
 window_S=[4 4]
+
+# Maximum drift allowed for onset picking on the Kurtosis (sec)
+max_drift=0.1
 
 # KURTO to weight conversion for P and S picks (3 2 1 0)
 KURTO2W_P=[1 2 4 10] 
@@ -39,6 +39,9 @@ KURTO2W_S=[1 2 4 10]
 # SNR to weight conversion for P and S picks (3 2 1 0)
 SNR2W_P=[2 5 9 12] 
 SNR2W_S=[2 5 9 12] 
+
+# Weighting switch, define if weighting based on 'SNR' or 'KURTO'
+weight_switch='SNR'
 
 # Define minimum number of ampltiudes to compute magnitude
 minphase_amp=3

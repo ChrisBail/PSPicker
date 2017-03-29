@@ -20,7 +20,7 @@ last_sample=1350;
 
 tic
 [A,B,M]=trace2FWkurto(trace,rsample,...
-            [1 25],...
+            [1 25;1 10],...
             [0.5 1 2 3 4],...
             1,first_sample,last_sample);
      toc
@@ -28,7 +28,7 @@ tic
 
 
 
-M=fliplr(M);
+
 figure
 plot(M(:,1))
  [ind_pick,vals_kurto]=follow_extrem2(M,10,1);

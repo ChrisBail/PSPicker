@@ -19,6 +19,10 @@ function [ind_pick,vals_kurto]=follow_extrem2(CF,swin_drift,flag_plot)
 
     swindow_ext=100; % number of samples to the right of the pick to estimate kurtosis Amplitude
 
+    %%% Test
+    
+    swin_drift=floor(swin_drift)+1;
+    
     %%% Initializemax_amp=right_loca_max(data,left_limit,right_limit)
 
     vals_kurto=[];
@@ -26,7 +30,7 @@ function [ind_pick,vals_kurto]=follow_extrem2(CF,swin_drift,flag_plot)
     %%% Retrieve the first pick from the first CF (which should be associated
     %%% to the largest kurtosis window
 
-    [first_pick_ind,first_pick_val]=get_min(CF(:,1),swindow_ext);
+    [first_pick_ind,~]=get_min(CF(:,1),swindow_ext);
 
     %%% Define left limit
 
