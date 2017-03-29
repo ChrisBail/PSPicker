@@ -249,90 +249,99 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
     
     %%%%%%% Start picking P on all selected channels
     
-    %%%% Initialise
+    %%%% Initialize
 
-    max_snr_n=zeros(numel(DATA_P.RAW),1)
-    max_kurto_n=zeros(numel(DATA_P.RAW),1)
-    ind_P_n=nan(numel(DATA_P.RAW),1)
+    max_snr_n=zeros(numel(DATA_P.RAW),1);
+    max_kurto_n=zeros(numel(DATA_P.RAW),1);
+    ind_P_n=nan(numel(DATA_P.RAW),1);
 
+    %%% Pick on each channels
+    
     for j=1:numel(DATA_P.RAW)
         
         trace_Pn(j)={DATA_P.RAW(j).TRACE};
         trace_P=trace_Pn{j};
         
-        %% Compute Kurtosis for P
+        %%% Compute Kurtosis for P
 
         t_begin=DATA_P.RAW.TIMESTART;
         first_sample=round((window(1)-t_begin)*86400*rsample);
         last_sample=round((window(2)-t_begin)*86400*rsample);
 
-        [all_mean_M,M]=trace2FWkurto(trace_P,rsample,...
+        [all_mean_M,M,CF_time]=trace2FWkurto(trace_P,rsample,...
                 PickerParam.Station_param.(station).pick.P.Kurto_F,...
                 PickerParam.Station_param.(station).pick.P.Kurto_W,...
                 1,first_sample,last_sample);
 
-    	% Pick the biggest extrema
+    	%%% Pick the onset on CF 
 
-   	[kurto_modif,ind_ext,ext_value,disper_P]=follow_extrem(all_mean_M,...
-		'mini',...
-		1,...
-		PickerParam.Station_param.(station).pick.P.Kurto_S,...
-		'no-normalize','no-sense');
+        [ind_pick,vals_kurto]=follow_extrem2(CF_time,...
+             PickerParam.max_drift*rsample,flag_plot);
 
-        if isempty(ind_ext)
+        if isempty(ind_pick)
             fprintf(1,'WARNING: not P phase found for station %s\n',station);
             continue
         end
+        
+        %%% Feed pick array
+        
+        ind_P_n(j)=ind_pick;
 
-        ind_P_n(j)=ind_ext;
+        %%% Compute max SNR
 
-        %% Define max_snr and max_kurto for further weighting conversion
+        window_snr=[2 2];
+        LTA_snr=PickerParam.SNR_wind(1);
+        STA_snr=PickerParam.SNR_wind(2);
+        smooth_snr=5;
 
-	%% Compute max SNR
-	
-	window_snr=[2 2];
-	LTA_snr=PickerParam.SNR_wind(1);
-	STA_snr=PickerParam.SNR_wind(2);
-	smooth_snr=5
-	
-	fil_trace_P=filterbutter(3,PickerParam.SNR_freq(1),PickerParam.SNR_freq(2),rsample,trace_P);
-	[snr,max_ind,max_snr(j)]=snr_function(abs(fil_trace_P),...
-	    rsample,LTA_snr,STA_snr,smooth_snr,...
-	    ind_Pn(j)-window_snr(1)*rsample,ind_Pn(j)+window_snr(2)*rsample,flag_plot);
-
-	%% Compute max Kurto
-
-        %std_P=mean(disper_P);
-        quartile=quantile(disper_P,4);
-        std_P=quartile(1);
-        weight_Pn(j)=kurto2weight(std_P,weight_kurt_P);
-        kurto_Pn(j)={all_mean_M};
-        %std_P=disper_P/rsample;
-        %weight_P=std2weight(std_P,weight_sec);
-
-
-        %% Get the weight based on SNR
-
+        fil_trace_P=filterbutter(3,PickerParam.SNR_freq(1),PickerParam.SNR_freq(2),rsample,trace_P);
+        [snr,max_ind,max_snr]=snr_function(abs(fil_trace_P),...
+            rsample,LTA_snr,STA_snr,smooth_snr,...
+            ind_Pn(j)-window_snr(1)*rsample,ind_Pn(j)+window_snr(2)*rsample,flag_plot);
+        
+        max_snr_n(j)=max_snr;
+        
+        %%% Compute max Kurto
+        
+        max_kurto_n(j)=quantile(vals_kurto,4);
 
     end
     
-    threshold_snr=PickerParam.SNR2W;
+    %%% Select best pick based on SNR or KURTO
+    
     boolean_snr_P=zeros(numel(DATA_P.RAW),1);
-    boolean_snr_P=max_value>=threshold_snr & max_value==max(max_value);
-    if ~any(boolean_snr_P)
-        weight_P=4;
-        ind_P=[];
-        trace_P=trace_Pn{1};
-        kurto_P=kurto_Pn{1};
-    else
-        weight_P=weight_Pn(boolean_snr_P);
-        ind_P=ind_Pn(boolean_snr_P);
-        trace_P=trace_Pn{boolean_snr_P};
-        kurto_P=kurto_Pn{boolean_snr_P};
-    end
+    boolean_kurto_P=zeros(numel(DATA_P.RAW),1);
     
+    if strcmp(PickerParam.weight_switch,'SNR')
+       
+        boolean_snr_P=(max_snr_n>=PickerParam.SNR2W_P(1) &...
+            max_snr_n==max(max_snr_n));
+        if ~any(boolean_snr_P)
+            weight_P=4;
+            ind_P=[];
+            trace_P=trace_Pn{1};
+        else
+            weight_P=get_weight(max(max_snr_n),PickerParam.SNR2W_P);
+            ind_P=ind_Pn(boolean_snr_P);
+            trace_P=trace_Pn{boolean_snr_P};
+        end
+        
+    else
+        
+        boolean_kurto_P=(max_kurto_n>=PickerParam.KURTO2W_P(1) &...
+            max_kurto_n==max(max_kurto_n));
+        if ~any(boolean_kurto_P)
+            weight_P=4;
+            ind_P=[];
+            trace_P=trace_Pn{1};
+        else
+            weight_P=get_weight(max(max_kurto_n),PickerParam.KURTO2W_P);
+            ind_P=ind_Pn(boolean_kurto_P);
+            trace_P=trace_Pn{boolean_kurto_P};
+        end
+        
+    end
 
- 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%  Compute S  %%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
