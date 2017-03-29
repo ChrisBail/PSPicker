@@ -29,6 +29,13 @@ end
 %%% More parameters
 
 T=T(:);
+
+%%% Sort T to biggest to smallest so that output is sorted
+
+T=sort(T,'descend');
+
+%%% Get sizes
+
 n=size(FB,1);
 m=size(T,1);
 num_traces=size(f,2);

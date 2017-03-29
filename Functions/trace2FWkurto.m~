@@ -1,4 +1,4 @@
-function KURTO=trace2FWkurto(f,h,FB,T,n_smooth,first,last) 
+function [CF_stack,CF_all,CF_time]=trace2FWkurto(f,h,FB,T,n_smooth,first,last) 
 % trace2FWkurto calculates cumulative kurtosis over bandwidths and windows
 %
 % Usage:
@@ -29,8 +29,18 @@ end
 %%% More parameters
 
 T=T(:);
+
+%%% Sort T to biggest to smallest so that output is sorted
+
+T=flipud
+
+
+
+%%% Get sizes
+
 n=size(FB,1);
 m=size(T,1);
+num_traces=size(f,2);
 l=m*n;
 
 dsample=1/h;
@@ -48,6 +58,9 @@ Nwin=floor(T/dsample);
 
 %%% Start Loop 
 A=[];
+CF_time=[];
+CF_all=[];
+
 for i=1:n  
     %%% Loop on filters
     filter_trace=filterbutter(3,FB(i,1),FB(i,2),h,f);
@@ -69,12 +82,13 @@ for j=1:m
     %corr_kurto_cum=drape_correction(kurto_cum); % New correction more efficient 17/11/2015
     line=f_segment(kurto_cum);          % Calculation of the straight line
     corr_kurto_cum=kurto_cum-line;      % Lineary corrected kurtosis
-    stack_kurto_cum_freq=sum(corr_kurto_cum,2)./n;
-    CF_TIME=[CF_TIME stack_kurto_cum_freq]
+    stack_kurto_cum_freq=sum(corr_kurto_cum,2)./(n*num_traces);
+    CF_time=[CF_time stack_kurto_cum_freq];
+    CF_all=[CF_all corr_kurto_cum];
 
 end
 
-%%mean_M=sum(C,2)./(l*fri);
+CF_stack=sum(CF_all,2)./(l*num_traces);
 
 end
 

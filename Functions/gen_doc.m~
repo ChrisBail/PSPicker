@@ -2,24 +2,33 @@ function gen_doc()
 % Function made to generate doc, basically it just loop over the functions
 % that are inside the functions/ directory and call matlab 'help' function 
 % and redirects it to files .md in the doc/ directory
-% Just run gen_doc without any arguments in the command window.
+% Just run gen_doc without any arguments in the command window in the
+% from the PSPicker dir
 % 
 % Example: gen_doc
 
 %%% Parameters
 
-path_to_function='./';
+path_to_function='./Functions';
 file_extension='*.m';
 doc_extension='.md';
-doc_dir='../docs';
+doc_dir='./docs';
 api_list=[doc_dir,'/','api_list.md'];
-package_dir='../docs/package';
+package_dir=[doc_dir,'/package'];
+
 
 %%% Check dir exist
 
+if 
+
 if ~exist(doc_dir,'dir')
-    mkdir(doc_dir)
+    mkdir(doc_dir);
 end
+
+if ~exist(package_dir,'dir')
+    mkdir(package_dir);
+end
+
 
 %%% Retrieve full path to functions
 
@@ -44,7 +53,7 @@ for i =1:numel(fullpath_cell)
     
     %%% Generate files
     
-    doc_name_full=[packa_dir,'/',function_name_noext,doc_extension];
+    doc_name_full=[package_dir,'/',function_name_noext,doc_extension];
     
     fic_doc=fopen(doc_name_full,'wt');
     help_parag=regexprep(help(function_name_full),'\n','   \n');
