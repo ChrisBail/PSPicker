@@ -30,8 +30,8 @@ snr_P_thres=90; % snr limit to consider trace
 snr_S_thres=90; % snr limit to consider trace
 % weight_sec=[0 0.2 0.5 1 3];
 % weight_sec_S=[-1 0 0.1 0.5 1 3];
-weight_kurt_P=[-10 -4 -2 -0.8 0];
-weight_kurt_S=[-10 -5 -2.5 -0.2 0];
+%weight_kurt_P=[-10 -4 -2 -0.8 0];
+%weight_kurt_S=[-10 -5 -2.5 -0.2 0];
 grad_thres=70; % max gradient threshold of trace distribution 
 kurtoratio_thres=20;
 
@@ -249,6 +249,12 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
     
     %%%%%%% Start picking P on all selected channels
     
+    %%%% Initialise
+
+    max_snr_n=zeros(numel(DATA_P.RAW),1)
+    max_kurto_n=zeros(numel(DATA_P.RAW),1)
+    ind_P_n=nan(numel(DATA_P.RAW),1)
+
     for j=1:numel(DATA_P.RAW)
         
         trace_Pn(j)={DATA_P.RAW(j).TRACE};
@@ -265,26 +271,36 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
                 PickerParam.Station_param.(station).pick.P.Kurto_W,...
                 1,first_sample,last_sample);
 
-        if strcmp(picking_method,'follow')
+    	% Pick the biggest extrema
 
-            % Pick the biggest extrema
-            [kurto_modif,ind_ext,ext_value,disper_P]=follow_extrem(all_mean_M,...
-                'mini',...
-                1,...
-                PickerParam.Station_param.(station).pick.P.Kurto_S,...
-                'no-normalize','no-sense');
-        else
-
-        end
+   	[kurto_modif,ind_ext,ext_value,disper_P]=follow_extrem(all_mean_M,...
+		'mini',...
+		1,...
+		PickerParam.Station_param.(station).pick.P.Kurto_S,...
+		'no-normalize','no-sense');
 
         if isempty(ind_ext)
             fprintf(1,'WARNING: not P phase found for station %s\n',station);
             continue
         end
 
-        ind_Pn(j)=ind_ext;
+        ind_P_n(j)=ind_ext;
 
-        %% Get the weight
+        %% Define max_snr and max_kurto for further weighting conversion
+
+	%% Compute max SNR
+	
+	window_snr=[2 2];
+	LTA_snr=PickerParam.SNR_wind(1);
+	STA_snr=PickerParam.SNR_wind(2);
+	smooth_snr=5
+	
+	fil_trace_P=filterbutter(3,PickerParam.SNR_freq(1),PickerParam.SNR_freq(2),rsample,trace_P);
+	[snr,max_ind,max_snr(j)]=snr_function(abs(fil_trace_P),...
+	    rsample,LTA_snr,STA_snr,smooth_snr,...
+	    ind_Pn(j)-window_snr(1)*rsample,ind_Pn(j)+window_snr(2)*rsample,flag_plot);
+
+	%% Compute max Kurto
 
         %std_P=mean(disper_P);
         quartile=quantile(disper_P,4);
@@ -297,14 +313,6 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
 
         %% Get the weight based on SNR
 
-        window_snr=[2 2];
-        LTA_snr=PickerParam.SNR_wind(1);
-        STA_snr=PickerParam.SNR_wind(2);
-        
-        fil_trace_P=filterbutter(3,1,10,rsample,trace_P);
-        [snr,max_ind,max_value(j)]=snr_function(abs(fil_trace_P),...
-            rsample,LTA_snr,STA_snr,15,...
-            ind_Pn(j)-window_snr(1)*rsample,ind_Pn(j)+window_snr(2)*rsample,flag_plot);
 
     end
     
