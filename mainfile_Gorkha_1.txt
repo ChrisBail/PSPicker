@@ -10,6 +10,9 @@ hyp='/home/baillard/Dropbox/_Moi/Projects/Nepal/Picking/hyp'
 # PSPicker Functions PATH
 function_path='/media/baillard/Shared/Dropbox/_Moi/Projects/Nepal/Picking/PSPicker_release_2_0/Functions/'
 
+# Instrumental Response File 
+station_PZ='/media/baillard/Shared/Dropbox/_Moi/Projects/Nepal/Picking/PSPicker_release_2_0/Stations_PZ.txt'
+
 # Sfile folder name for storing outputs
 sfile_folder='SFILE'
 
