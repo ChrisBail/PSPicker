@@ -1,4 +1,4 @@
-function [Main,flag]=readmain(file)
+function Main=readmain(file)
 % Function made to read the main configuration file used by PSPicker
 %
 % Input: file > main configuration file (type: str)
@@ -14,6 +14,7 @@ num_fields_pick=11;  % number of fields that should be given in the station line
 num_fields_amp=3;
 
 %file='/Users/baillard/_Moi/Projets/Nepal/Picking/mainfile_Gorkha.txt';
+
 %%% Initialize
 
 Main=struct();
@@ -43,7 +44,7 @@ end
 
 %%% Check if paths exist
 
-flag=checkpath(Main);
+checkpath(Main);
 
 %%% Eval station dependent files
 
@@ -108,11 +109,10 @@ Main.Station_param=Station_param;
 end
 
 
-function flag=checkpath(Main)
+function checkpath(Main)
 %%% Function made to check if mainpath_exist, if one the path is not set
 %%% the script endds
 
-flag=1;
 undefined_path=[];
 map={'input_nordic','sds_path','hyp','station_file'};
 
@@ -123,9 +123,10 @@ for i=1:numel(map)
     end
 end
 
+warning('off',');
 if ~isempty(undefined_path)
-    flag=0;
-    fprintf(1,undefined_path);
+    warning(undefined_path);
+    return;
 end
 
 end

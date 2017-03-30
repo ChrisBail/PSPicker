@@ -5,12 +5,18 @@ function new_event=comp_THEO(hyp,event)
 
 %%% Start process
 
-if ~exist('tmp','dir')
-    mkdir('tmp');
+if ~exist('hyp','dir')
+    mkdir('hyp');
 end
 
-sfile_input='./tmp/input.sfile';
-sfile_output='./tmp/ouput.sfile';
+%%% Go into hyp/ dir to avoid stuffing current dir
+
+cd('hyp');
+
+%%% Define input_output files
+
+sfile_input='input.sfile';
+sfile_output='ouput.sfile';
 
 %%% Create sfile
 
@@ -26,7 +32,7 @@ new_event=nor2event(sfile_output);
 
 %%% Read first loc
 
-first_event=nor2event('./tmp/first_loc.out');
+first_event=nor2event('first_loc.out');
 
 new_new=first_event;
 new_new.PHASES=new_event.PHASES;
@@ -41,7 +47,11 @@ new_event.ID=event.ID;
 
 %%% Move files to temp directory files
 
-delete('gmap.cur.kml','hypmag.out','hypsum.out','print.out');
+delete('hypmag.out','hypsum.out','print.out');
+
+%%% Go back to top directory
+
+cd('../');
 
 end
 

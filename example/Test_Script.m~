@@ -1,0 +1,39 @@
+% This function is meant to show you how PSPicker works taken some example SDS and nordic file
+% as input
+% 
+% Usage: run test_script() in Command window
+
+clear all
+close all
+
+function_path='/media/baillard/Shared/Dropbox/_Moi/Projects/Nepal/Picking/PSPicker_release_2_0/Functions/';
+mainfile='mainfile_Gorkha_1.txt';
+
+
+%%% Load Path
+
+addpath(genpath(function_path));
+
+%%% Read main
+PickerParam=readmain(mainfile);
+
+%%%% Read events
+EVENTS=nor2event(PickerParam.input_nordic);
+EVENT=EVENTS(5);
+save('EVENT.mat','EVENT')
+
+
+EVENT=load('EVENT.mat');
+EVENT=EVENT.EVENT;
+
+%%%% Start Process
+
+flag_plot=1;
+
+ [~,ind_S]=get_PHASE(EVENT.PHASES,'type','S');
+            [EVENT.PHASES(ind_S).WEIGHT]=deal(2);
+
+
+S=refine_PICKS(EVENT,mainfile,1);
+
+

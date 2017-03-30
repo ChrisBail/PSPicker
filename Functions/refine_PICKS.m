@@ -1,4 +1,4 @@
-function S=refine_PICKS(EVENT,mainfile,flag_plot)
+function S=refine_PICKS(EVENT,mainfile,flag_plot_level)
 
 % Refine picks
 % The program takes an EVENT input (structure), reads the origin and the picks
@@ -13,54 +13,48 @@ function S=refine_PICKS(EVENT,mainfile,flag_plot)
 %  Example:   NEW_EVENT=refine_PICKS(OLD_EVENT,'mainfile.txt',0)
 %  
 
-clearvars -except EVENT mainfile flag_plot
+clearvars -except EVENT mainfile flag_plot_level
 
-% event_file='/home/baillard/_Moi/Projets/Nepal/Day_119/Try_3/binder/events.txt';
-% mainfile='mainfile_Gorkha.txt';
-% flag_plot=1;
-% EVENT=read_EVENTS(event_file,'e','test.mat');
-% EVENT=EVENT(4);
+%%% Define flag_plot level
 
-%%% Parameters that shouldn't be changed
-
-sds2mseed='./Functions/sds2mseed.sh';
-%event_file='/Users/baillard/_Moi/Projets/Nepal/binder/test_05/events.txt';
-output_mseed='cat.mseed';
-snr_P_thres=90; % snr limit to consider trace
-snr_S_thres=90; % snr limit to consider trace
-% weight_sec=[0 0.2 0.5 1 3];
-% weight_sec_S=[-1 0 0.1 0.5 1 3];
-%weight_kurt_P=[-10 -4 -2 -0.8 0];
-%weight_kurt_S=[-10 -5 -2.5 -0.2 0];
-grad_thres=70; % max gradient threshold of trace distribution 
-kurtoratio_thres=20;
-
-%%% Create temp directory for picking
-
-if ~exist('./refine/','dir')
-    mkdir('refine');
-end
-
-if ~exist(sds2mseed,'file')
-    error('No %s file, check prese',sds2mseed);
-end
+flag_plot=level2flagplot(3,flag_plot_level);
 
 %%% Read main file
 
 PickerParam=readmain(mainfile);  
-hyp=PickerParam.HYP;
+
+%%% Create junk repos for temporary files
+
+if ~exist('tmp','dir')
+    mkdir('tmp')
+end
+
+if ~exist('hyp','dir')
+    mkdir('hyp')
+end
+
+%%% Copy STATION0.HYP file to hyp directory
+
+copyfile(PickerParam.station_file,'./hyp/')
+
+%%% Parameters that shouldn't be changed
+
+output_mseed='./tmp/cat.mseed';
+snr_P_thres=90; % snr limit to consider trace
+snr_S_thres=90; % snr limit to consider trace
+grad_thres=70; % max gradient threshold of trace distribution 
+kurtoratio_thres=20;
+hyp=PickerParam.hyp;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Get parameters from PickerParam
 
-delay_before=PickerParam.Extract_time(1);
-delay_after=PickerParam.Extract_time(2);
+delay_before=PickerParam.extract_time(1);
+delay_after=PickerParam.extract_time(2);
 window_P=PickerParam.window_P;
 window_S=PickerParam.window_S;
 channels=chanlist_PARAM(PickerParam);
 channels_str=strjoin(channels);
-window_max_S=PickerParam.window_max_S;
-picking_method=PickerParam.picking_method;
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %%% Get List of stations to be processed from mainfile
@@ -88,17 +82,18 @@ start_time_str=datestr(start_time,...
 end_time_str=datestr(end_time,...
         'yyyy-mm-dd HH:MM:SS');    
 
-mseed_file=['./refine/',output_mseed];
 cmd=sprintf('-start "%s" -end "%s" -sta "%s" -comp "%s" -sds "%s" -o "%s"',...
-   start_time_str,end_time_str,stations_str,channels_str,PickerParam.SDS_path,mseed_file);
+   start_time_str,end_time_str,stations_str,channels_str,PickerParam.sds_path,output_mseed);
 
-[~,~]=system([sds2mseed,' ',cmd]);
+call_sds2mseed(cmd);
+
+%[~,~]=system([sds2mseed,' ',cmd]);
 
 %%%%%%%%%%%%%%%%%%
 %%% Read file %%%%
 %%%%%%%%%%%%%%%%%%
 
-X=rdmseed(mseed_file);
+X=rdmseed(output_mseed);
 S=get_DATA(X);
 clear X
 
@@ -121,8 +116,6 @@ DATA=get_SNR(DATA,...
     PickerParam.SNR_freq);
 
 %%% Start loop
-
-i_pick=0; 
 
 for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can analyse all the 4 components)
     
@@ -215,22 +208,21 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
         
         %%% Check SNR
         
-        [level,scr]=noise_level(snr,first_sample,last_sample,smooth_snr,percent_thres,flag_plot);       
-        levels_P(j)=level;
+        [level,scr]=noise_level(snr,first_sample,last_sample,smooth_snr,percent_thres,flag_plot(3));      
         if level>=snr_P_thres
            boolean_presnr(j)=0;
         end
         
         %%% Check Gaussianity
         
-        max_gradient=maxgrad_histo(trace,first_sample,last_sample,flag_plot);
+        max_gradient=maxgrad_histo(trace,first_sample,last_sample,flag_plot(3));
         if max_gradient>=grad_thres
            boolean_gaussian(j)=0;
         end
         
         %%% Check kurto _distrib
         
-        [ratio_low,std_value]=histo_kurto(trace,first_sample,last_sample,100,1.5,flag_plot);
+        [ratio_low,std_value]=histo_kurto(trace,first_sample,last_sample,100,1.5,flag_plot(3));
 
         if ratio_low>=kurtoratio_thres
            boolean_kurto(j)=0;
@@ -254,7 +246,8 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
     max_snr_n=zeros(numel(DATA_P.RAW),1);
     max_kurto_n=zeros(numel(DATA_P.RAW),1);
     ind_P_n=nan(numel(DATA_P.RAW),1);
-
+    trace_Pn={};
+    trace_S=[];
     %%% Pick on each channels
     
     for j=1:numel(DATA_P.RAW)
@@ -297,13 +290,14 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
         fil_trace_P=filterbutter(3,PickerParam.SNR_freq(1),PickerParam.SNR_freq(2),rsample,trace_P);
         [snr,max_ind,max_snr]=snr_function(abs(fil_trace_P),...
             rsample,LTA_snr,STA_snr,smooth_snr,...
-            ind_Pn(j)-window_snr(1)*rsample,ind_Pn(j)+window_snr(2)*rsample,flag_plot);
+            ind_P_n(j)-window_snr(1)*rsample,ind_P_n(j)+window_snr(2)*rsample,flag_plot);
         
         max_snr_n(j)=max_snr;
         
         %%% Compute max Kurto
         
-        max_kurto_n(j)=quantile(vals_kurto,4);
+        scr=quantile(vals_kurto,4);
+        max_kurto_n(j)=scr(end);
 
     end
     
@@ -322,7 +316,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
             trace_P=trace_Pn{1};
         else
             weight_P=get_weight(max(max_snr_n),PickerParam.SNR2W_P);
-            ind_P=ind_Pn(boolean_snr_P);
+            ind_P=ind_P_n(boolean_snr_P);
             trace_P=trace_Pn{boolean_snr_P};
         end
         
@@ -336,7 +330,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
             trace_P=trace_Pn{1};
         else
             weight_P=get_weight(max(max_kurto_n),PickerParam.KURTO2W_P);
-            ind_P=ind_Pn(boolean_kurto_P);
+            ind_P=ind_P_n(boolean_kurto_P);
             trace_P=trace_Pn{boolean_kurto_P};
         end
         
@@ -383,7 +377,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
         SNR_PARAM.STA=1;
         SNR_PARAM.filter_band=[1 10];
       
-        [boolean_snr,max_snr,SNR]=pass_SNRTEST(DATA_S,SNR_PARAM,flag_plot);
+        [boolean_snr,max_snr,SNR]=pass_SNRTEST(DATA_S,SNR_PARAM,flag_plot(3));
       
         %%%%%%%%%%%%%%%%
         %%% GAP TEST %%%
@@ -394,7 +388,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
         GAP_PARAM.time_phase=time_S;
         GAP_PARAM.window=[time_S-window(1) window(2)-time_S].*86400;
         
-        boolean_gap=pass_GAPTEST(DATA_S,GAP_PARAM,flag_plot);
+        boolean_gap=pass_GAPTEST(DATA_S,GAP_PARAM,flag_plot(3));
         
         %%%%%%%%%%%%%%%%%%%%%
         %%% GAUSSIAN test %%%
@@ -405,7 +399,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
         GAUSSIAN_PARAM.window=[10 10];
         
         boolean_gaussian=[];
-        [boolean_gaussian,max_gradient]=pass_GAUSSIANTEST(DATA_S,GAUSSIAN_PARAM,flag_plot);
+        [boolean_gaussian,max_gradient]=pass_GAUSSIANTEST(DATA_S,GAUSSIAN_PARAM,flag_plot(3));
 
         %%%%%%%%%%%%%%%%%%%%%%%%
         %%% Multiply booleans %%
@@ -469,7 +463,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
     	%%% Pick the onset on CF 
 
         [ind_pick,vals_kurto]=follow_extrem2(CF_time,...
-             PickerParam.max_drift*rsample,flag_plot);
+             PickerParam.max_drift*rsample,flag_plot(3));
 
         if isempty(ind_pick)
             fprintf(1,'WARNING: not S phase found for station %s\n',station);
@@ -490,7 +484,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
         fil_trace_S=filterbutter(3,PickerParam.SNR_freq(1),PickerParam.SNR_freq(2),rsample,trace_P);
         [snr,max_ind,max_snr]=snr_function(abs(cf_S),...
             rsample,LTA_snr,STA_snr,smooth_snr,...
-            ind_S-window_snr(1)*rsample,ind_S+window_snr(2)*rsample,flag_plot);
+            ind_S-window_snr(1)*rsample,ind_S+window_snr(2)*rsample,flag_plot(3));
         
         max_snr_n=max_snr;
         
@@ -509,7 +503,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
                 ind_S=[];
             else
                 weight_S=get_weight(max(max_snr_n),PickerParam.SNR2W_S);
-                ind_S=ind_Sn(boolean_snr_S);
+                ind_S=ind_S;
             end
 
         else
@@ -547,7 +541,7 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
   
     %% Figure
 
-    if flag_plot
+    if flag_plot(2)
 
         figure(1)
 
@@ -555,17 +549,12 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
         PickerParam.Station_param.(DATA(iter).STAT).pick.P.Kurto_F(1,1),...
         PickerParam.Station_param.(DATA(iter).STAT).pick.P.Kurto_F(1,2),...
         rsample,trace_P);
-    
-        filt_S=filterbutter(3,...
-        PickerParam.Station_param.(DATA(iter).STAT).pick.S.Kurto_F(1,1),...
-        PickerParam.Station_param.(DATA(iter).STAT).pick.S.Kurto_F(1,2),...
-        rsample,trace_S);
-
+   
         xax=(1:length(trace_P))/(rsample);
         
         %%% Plot P
         
-        h1=subplot(4,1,1);      
+        h1=subplot(2,1,1);      
         plot(xax,filt_P/max(filt_P),'k');
         title('Trace used for P-pick')
         hold on
@@ -578,21 +567,31 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
             patch([xmin xmax xmax xmin xmin],[dmin dmin dmax dmax dmin],-.1*ones(1,5),[.9 0.8 0.8],'EdgeColor','k')
 
             plot([ind_P ind_P]/rsample,[dmin dmax],'Color','b');
-            plot([ind_P/rsample-std_P/2 ind_P/rsample+std_P/2],[dmax dmax]*0.7,'Color','b');
-                    
+                     
             ts=abs2rela(time_P,t_begin,rsample);
             plot([ts ts]/rsample,[dmin dmax],'--b');
         end
         hold off
-       %%% Plot S
         
-        h1bis=subplot(4,1,2);
+        %%% Plot S
         
-        plot(xax,filt_S/max(filt_S),'k');
-        title('Trace used for S-pick')
-        hold on
+        if ~isempty(trace_S)
+            
+                 filt_S=filterbutter(3,...
+        PickerParam.Station_param.(DATA(iter).STAT).pick.S.Kurto_F(1,1),...
+        PickerParam.Station_param.(DATA(iter).STAT).pick.S.Kurto_F(1,2),...
+        rsample,trace_S);
+    
+            h1bis=subplot(2,1,2);
+
+            plot(xax,filt_S/max(filt_S),'k');
+            title('Trace used for S-pick');
+        end
 
         if ~isempty(ind_S)
+            
+          
+            hold on
             xmin_S=first_sample_S/rsample;
             xmax_S=last_sample_S/rsample;
             dmin=-1;
@@ -600,35 +599,16 @@ for iter=1:length(DATA) % iter goes trough all the stations (for one iter we can
             patch([xmin_S xmax_S xmax_S xmin_S xmin_S],[dmin dmin dmax dmax dmin],-.1*ones(1,5),[.9 .9 .9],'EdgeColor','k','facealpha',0.7)
 
             plot([ind_S ind_S]/rsample,[dmin dmax],'Color','r');
-            plot([ind_S/rsample-std_S/2 ind_S/rsample+std_S/2],[dmax dmax]*0.7,'Color','r');
             ts=abs2rela(time_S,t_begin,rsample);
             plot([ts ts]/rsample,[dmin dmax],'--r');
     
         end
         
 
-        hold off
-        
-        h2=subplot(4,1,3);
-        plot(xax,kurto_P,'k')
-        title('Kurtosis')
-        if pick_flag_S==1
-            hold on
-            plot(xax,kurto_S,'k')
-        end
-        %yl=get(h2,'YLim');
-        %set(h2,'YLim',[yl(1) 0.2])
-        
-        hold off
-        h3=subplot(4,1,4);
-        plot(xax,DATA_P.RAW(boolean_snr_P==1).SNR,'k')
-        title('SNR function')
-        linkaxes([h1,h1bis,h2,h3], 'x');
-        
     end
     
 
-    if flag_plot
+    if flag_plot(2)
         fprintf(1,'Station: %s\n',station);
         keyboard
         close all
@@ -638,12 +618,15 @@ end
 
 EVENT.PHASES=PHASES;
 
+%%% Relocate 
 new_event=comp_THEO(hyp,EVENT);
 new_event.COLOR=[1 0 0];
 S.DATA=DATA;
 S.EVENTS=new_event;
 
-if flag_plot
+%%% Plot if asked
+
+if flag_plot(1)
     plot_DATA(S);
 end
 

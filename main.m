@@ -5,12 +5,15 @@
 clear all
 close all
 
+%%% Load Paths to functions
+
+addpath(genpath('Functions'))
+
 %%%%%%%%%%%%%%%%%%
 %%% Parameters %%%
 %%%%%%%%%%%%%%%%%%
 
-mainfile={'mainfile_Gorkha_1.txt','mainfile_Gorkha_2.txt'};
-pz_file='stations_PZ.txt';
+mainfile={'mainfile.txt'};
 flag_plot=1;
 rms_thres=4;
 mstan=2;
@@ -18,9 +21,7 @@ limit_pha=4;
 limit_dev=0.5;
 debug=0;
 
-%%% Load Paths
 
-addpath(genpath('Functions'))
 
 %%%% Define global variables
 
@@ -31,6 +32,7 @@ global PickerParam
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 PickerParam=readmain(mainfile{1}); 
+pz_file=PickerParam.station_PZ;
 input_nordic=PickerParam.input_nordic;
 
 %%% Check if input is file or directory and store in cell

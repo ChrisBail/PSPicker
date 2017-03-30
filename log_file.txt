@@ -1,8 +1,0 @@
-Processing EVENT 2015-04-24 00:02:16
-Problem for EVENT 2015-04-24 00:02:16 1
-Reference to non-existent field 'SNR_wind'.
-refine_PICKS
-114
-main
-137
-Processing EVENT 2015-04-24 01:41:05

@@ -26,13 +26,6 @@ function comp_ARRIVALS(hyp,sfile,sfile_output,show)
 
 S=read_nor(sfile);
 
-%% Create directory and run hyp inside it
-
-if ~exist('tmp','dir')
-    mkdir('tmp');
-end
-
-%cd('tmp_hyp')
 
 %% Checking Files and Programs
 %%% Check if file and hyp location exist
@@ -62,9 +55,6 @@ if isempty(dir(fullfile('./',model_file)))
 else
     station_list=read_STATION0HYP(model_file);
     station_list={station_list{:,1}}';
-    %copyfile(model_file,'tmp_hyp','f');
-    cmd=['cp -p -f ',model_file,' ./tmp/'];
-    [~,~]=system(cmd);
 end
 
 
@@ -82,7 +72,7 @@ end
 
 H=read_nor('hyp.out');
 
-cmd=sprintf('cp -f %s %s','hyp.out','./tmp/first_loc.out');
+cmd=sprintf('cp -f %s %s','hyp.out','first_loc.out');
 system(cmd);
 
 
@@ -115,11 +105,11 @@ end
 
 N.DATA=DATA;
 
-write_nor(N,'./tmp/scratch.dat');
+write_nor(N,'scratch.dat');
 
 %%% Locate 2nd time to get residuals
 
-cmd=sprintf('%s %s',hyp,'./tmp/scratch.dat');
+cmd=sprintf('%s %s',hyp,'scratch.dat');
 if show
     system(cmd);
 else
@@ -128,10 +118,10 @@ end
 
 %%% Apply residuals to get final arrival time
 
-cmd='sed -n ''/stn  /,/^$/p'' print.out | tail -n+2 | awk ''{print substr($0,1,5),substr($0,26,2),substr($0,42,2),substr($0,44,2),substr($0,47,4),substr($0,58,6)}'' > ./tmp/travel.out';
+cmd='sed -n ''/stn  /,/^$/p'' print.out | tail -n+2 | awk ''{print substr($0,1,5),substr($0,26,2),substr($0,42,2),substr($0,44,2),substr($0,47,4),substr($0,58,6)}'' > travel.out';
 system(cmd);
 
-fic=fopen('./tmp/travel.out','rt');
+fic=fopen('travel.out','rt');
 A=textscan(fic,'%s %s %f %f %f %f\n') ;
 fclose(fic);
 
@@ -161,11 +151,11 @@ end
 
 %% Locate and Move files
 
-write_nor(H,'./tmp/scratch.dat');
+write_nor(H,'scratch.dat');
 
 %%% Locate to get residuals
 
-cmd=sprintf('%s %s',hyp,'./tmp/scratch.dat');
+cmd=sprintf('%s %s',hyp,'scratch.dat');
 if show
     system(cmd);
 else

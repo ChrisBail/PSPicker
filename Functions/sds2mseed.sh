@@ -199,6 +199,8 @@ done
 dataselect_start=`date -d  "$start_time" "+%Y.$julian_day_start.%H.%M.%S"`
 dataselect_end=`date -d "$end_time" "+%Y.$julian_day_end.%H.%M.%S"`
 
+rm -f $list_file
+
 # Mac platform 
 
 #dataselect_start=`date -j -f "%Y %m %d %H:%M:%S" "$start_time" "+%Y.$julian_day_start.%H.%M.%S"`

@@ -55,7 +55,8 @@ function [ind_pick,vals_kurto]=follow_extrem2(CF,swin_drift,flag_plot)
 
         %%% Estimate kurto amplitude
         val_kurto=right_loca_max(data,left_limit,left_limit+swindow_ext);
-
+        vals_kurto=[vals_kurto val_kurto];
+        
         if isempty(ind_min_left)
             continue
         else
@@ -65,7 +66,7 @@ function [ind_pick,vals_kurto]=follow_extrem2(CF,swin_drift,flag_plot)
         %%% feed element
         follow_ind=[follow_ind ind_min_left];
         follow_val=[follow_val val_min_left];
-        vals_kurto=[vals_kurto val_kurto];
+ 
 
     end
 
@@ -161,7 +162,7 @@ function max_amp=right_loca_max(data,left_limit,right_limit)
     if isempty(scr)
         ext_val=data(right_limit);
         if isnan(ext_val)
-            scr2=data(min_ind:right_limit);
+            scr2=data(left_limit:right_limit);
             scr3=scr2(~isnan(scr2));
             ext_val=scr3(end);
         end

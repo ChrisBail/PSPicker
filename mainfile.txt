@@ -7,8 +7,8 @@ sds_path='/media/baillard/baillard_d1/SDS/'
 # SEISAN HYPOCENTER path
 hyp='/home/baillard/Dropbox/_Moi/Projects/Nepal/Picking/hyp'
 
-# PSPicker Functions PATH
-function_path='/media/baillard/Shared/Dropbox/_Moi/Projects/Nepal/Picking/PSPicker_release_2_0/Functions/'
+# SEISAN STATION0.HYP path
+station_file='/media/baillard/Shared/Dropbox/_Moi/Projects/Nepal/Picking/PSPicker_release_2_0/STATION0.HYP'
 
 # Instrumental Response File 
 station_PZ='/media/baillard/Shared/Dropbox/_Moi/Projects/Nepal/Picking/PSPicker_release_2_0/Stations_PZ.txt'
