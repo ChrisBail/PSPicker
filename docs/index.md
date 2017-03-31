@@ -3,7 +3,7 @@
 Christian Baillard  
 baillard@geologie.ens.fr or baillard@uw.edu
 
-The purpose of this cookbook is to describe the workflow for automatic picking refinement using the Matlab based script PSPicker.
+The purpose of this cookbook is to describe the workflow for automatic picking refinement using the Matlab based library **PSPicker**.
 
 # Goal
 
