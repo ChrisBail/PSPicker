@@ -19,7 +19,7 @@ PSPicker is a Matlab library designed to improve location of events by both refi
 
 Nothing is more easy! Just go into the [github repo](https://github.com/ChrisBail/PSPicker) and clone it on your computer (for example in /home/toto/program/).
 
-# What's inside the package
+# What's inside the package?
 
 In PSPicker repo you will find:  
 * `main.m` which is the main script that performs automatic picking/relocation/cleaning...
