@@ -25,15 +25,20 @@ In PSPicker repo you will find:
 * `main.m` which is the main script that performs automatic picking/relocation/cleaning...
 * `Functions/` directory that includes all functions
 * [`mainfile.txt`](mainfile.md) which is the main configuration file.
-* `example` directory which is meant to give you a quick overview of PSPicker possibilities.
-	*  
-* `docs/` directory containing all the docs (including this one ;) )
-* stations_PZ.txt that contains Gain and poles and zeros for each channel.  
-* STATION0.HYP which is the parameter file (containing station coordinates and velocity model) needed by HYPOCENTER. 
+* `example/` directory which is meant to give you a quick overview of PSPicker possibilities given real data. Inside it you will find:
+	* `SDS/` directory (which contains all the MSEED files stored in a SEISCOMP Data Structure)
+	* `initial.nor`, file containing preliminary locations and phases intended to be reprocessed using PSPicker Library.
+	* `mainfile.txt`, configuration file tuned for example.
+	* `STATION0.HYP`, file containg station locations and velocity model used by HYPOCENTER location program.
+	* `stations_PZ.txt`, instrument response file (used for amplitude calculation.
+	* `test_function`, example file to run automatic picking. Just run `test_function` in the command window.
+	* `EVENT.mat`,`trace_P.mat`,`trace_S.mat` are data files that can be used to test PSPicker functions. 
+* `docs/` directory containing all the docs (including this one ;) ).
+* `screenshots/` directory (straightforward!).
+* README.md
+ 
 
-STATION0.HYP This file allows location of events from phase arrivals. It’s the parameter file of HYPOCENTER used by SEISAN, for any details please refer to the the SEISAN user’s guide. As we used HYPOCENTER for primar locations and update of the solutions after refining the picks we need this file in the working directory.
-
-To sum up, STATION0.HYP regroups geographical locations of all stations of the network (name, lon, lat, altitude, station correction if we have it) and also the 1D velocity model we are using. The way the 1D model is given is really similar to what we have in hypo71 for those who are familiar with it. In details we specify the P-velocity at each user’s specified depth, then we give the Vp/Vs ratio, and then we specify the distance’s based weighting scheme used by the locator. In more simple way, we specify the weights of each arrivals based on the station-epicenter distance, the closer the station is, the more weight we put on the corresponding arrival.
+NOTES: STATION0.HYP is the parameter file used by HYPOCENTER used by SEISAN, for any details please refer to the the SEISAN user’s guide. STATION0.HYP regroups geographical locations of all stations of the network (name, lon, lat, altitude, station correction if we have it) and also the 1D velocity model we are using. The way the 1D model is given is really similar to what we have in hypo71 for those who are familiar with it. In details we specify the P-velocity at each user’s specified depth, then we give the Vp/Vs ratio, and then we specify the distance’s based weighting scheme used by the locator. In more simple way, we specify the weights of each arrivals based on the station-epicenter distance, the closer the station is, the more weight we put on the corresponding arrival.
 
 
 # System requirement 
@@ -44,7 +49,6 @@ PSPicker mostly uses Matlab scripts and functions (except [HYPOCENTER](hypocente
 The program PSPicker is launched through one single script called `main.m` that reads the `mainfile.txt`. Every paramters/inputs are given in the configuration file `mainfile.txt` and detailed [here](mainfile.md). The input of `main.m` is a nordic file .nor (specific file format used by SEISAN) that has a preliminary location and phase arrivals for each event. Each event contained in the .nor file will be converted to a single structure called EVENT. EVENT is the most important structure of the program, it contains all the info associated to that event, e.g. location, origin time, magnitude, phases arrivals, type of phases... PSPicker will thus process all the events (re-pick phases, update location, compute magnitude) and return a final EVENT structure of size m where m is the number of events in your final catalog. At the end of the process, PSPicker will convert the EVENT structure in a .nor output file.
 
 **So to recap: Input file in .nor format > PSPicker > Output file in .nor format**
-
 
 
 # Most important functions
