@@ -3,7 +3,8 @@
   by an extremum gradient where all samples are zeros, thus the gradient   
   is 1 / delta(x), we normalized the trace before processing to ensure the min, max    
   of the trace is -1/+1. delta_x should not be changed and is equal to 0.01 (200 steps   
-  from -1 to 1).   
+  from -1 to 1). It is mainly designed to reject clipped trace, where   
+  samples amplitudes have common values   
      
   Input:   
       trace: trace to be processed   

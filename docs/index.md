@@ -74,5 +74,7 @@ Note: No cleaning of mispicks is performed by `refine_PICKS`, this is done by `r
 Please check [here](api_list.md) to have a complete list of functions and associated descriptions
 
 
+# Contribution
 
+You are warmly welcomed to contribute to this project using the utilities provided by github (pull requests).  
 
