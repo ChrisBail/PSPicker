@@ -46,6 +46,7 @@ PSPicker mostly uses Matlab scripts and functions (except [HYPOCENTER](hypocente
 
 # Usage
 
+Before anything don't forget to `addpath(genpath(path/to/functions))` if you want to use PSPicker library from other directory than the current directory. The current directory you're working in should always have a `mainfile.txt` in it.  
 The program PSPicker is launched through one single script called `main.m` that reads the `mainfile.txt`. Every paramters/inputs are given in the configuration file `mainfile.txt` and detailed [here](mainfile.md). The input of `main.m` is a nordic file .nor (specific file format used by SEISAN) that has a preliminary location and phase arrivals for each event. Each event contained in the .nor file will be converted to a single structure called EVENT. EVENT is the most important structure of the program, it contains all the info associated to that event, e.g. location, origin time, magnitude, phases arrivals, type of phases... PSPicker will thus process all the events (re-pick phases, update location, compute magnitude) and return a final EVENT structure of size m where m is the number of events in your final catalog. At the end of the process, PSPicker will convert the EVENT structure in a .nor output file.
 
 **So to recap: Input file in .nor format > PSPicker > Output file in .nor format**
