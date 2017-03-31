@@ -7,14 +7,34 @@ The purpose of this cookbook is to describe the workflow for automatic picking r
 
 # Goal
 
-PSPicker is designed to improve location of events by both refining the P and S onset times and integrating more arrivals into the problem. Typically, if the user has a poor quality catalog, with unaccurrate picks, PSPicker is definitely the right tool!
+PSPicker is a Matlab library designed to improve location of events by both refining the P and S onset times and integrating more arrivals into the problem. Typically, if the user has a poor quality catalog, with unaccurrate picks, PSPicker is definitely the right tool!
 
-In details, PSPicker will compute theoretical travel times based on a simple 1D velocity model, then try to improve/find onsets in the vicinity of absolute theoretical arrival times.
 
 # Pre-requist
 
 * [HYPOCENTER](hypocenter.md)
 * [dataselect](dataselect.md)
+
+# Get the Package
+
+Nothing is more easy! Just go into the [github repo](https://github.com/ChrisBail/PSPicker) and clone it on your computer (for example in /home/toto/program/).
+
+# What's inside the package
+
+In PSPicker repo you will find:  
+* `main.m` which is the main script that performs automatic picking/relocation/cleaning...
+* `Functions/` directory that includes all functions
+* [`mainfile.txt`](mainfile.md) which is the main configuration file.
+* `example` directory which is meant to give you a quick overview of PSPicker possibilities.
+	*  
+* `docs/` directory containing all the docs (including this one ;) )
+* stations_PZ.txt that contains Gain and poles and zeros for each channel.  
+* STATION0.HYP which is the parameter file (containing station coordinates and velocity model) needed by HYPOCENTER. 
+
+STATION0.HYP This file allows location of events from phase arrivals. It’s the parameter file of HYPOCENTER used by SEISAN, for any details please refer to the the SEISAN user’s guide. As we used HYPOCENTER for primar locations and update of the solutions after refining the picks we need this file in the working directory.
+
+To sum up, STATION0.HYP regroups geographical locations of all stations of the network (name, lon, lat, altitude, station correction if we have it) and also the 1D velocity model we are using. The way the 1D model is given is really similar to what we have in hypo71 for those who are familiar with it. In details we specify the P-velocity at each user’s specified depth, then we give the Vp/Vs ratio, and then we specify the distance’s based weighting scheme used by the locator. In more simple way, we specify the weights of each arrivals based on the station-epicenter distance, the closer the station is, the more weight we put on the corresponding arrival.
+
 
 # System requirement 
 PSPicker mostly uses Matlab scripts and functions (except [HYPOCENTER](hypocenter.md) and [dataselect](dataselect.md)). The computational cost of the software is small, an 8 GB internal memory computer will run the program easily. The main script is based on a major loop that processes each events of the catalog one by one and outputs the results directly in a file so that even if it crashes, every event processed is kept into the hard drive. Even if we tried as hard as possible to avoid using the Matlab signal processing toolbox some of these functions are still call by PSPicker. We recommend to use Matlab 2015.
@@ -25,20 +45,23 @@ The program PSPicker is launched through one single script called `main.m` that 
 
 **So to recap: Input file in .nor format > PSPicker > Output file in .nor format**
 
-# Basic worflow
 
-Clone the gitbut repository to your computer.   
-Go to your desired working directory where you will run PSPicker. For example /home/smith/work/PSPicker.   
-You will find:  
-* main.m which is the main script containing the loop
-* Functions/ directory that includes all functions called by main.m
-* mainfile.txt which is the main configuration file
-* stations_PZ.txt that contains Gain and poles and zeros for each channel.  
-* STATION0.HYP which is the parameter file (containing station coordinates and velocity model) needed by HYPOCENTER. 
 
-STATION0.HYP This file allows location of events from phase arrivals. It’s the parameter file of HYPOCENTER used by SEISAN, for any details please refer to the the SEISAN user’s guide. As we used HYPOCENTER for primar locations and update of the solutions after refining the picks we need this file in the working directory.
+# Most important functions
 
-To sum up, STATION0.HYP regroups geographical locations of all stations of the network (name, lon, lat, altitude, station correction if we have it) and also the 1D velocity model we are using. The way the 1D model is given is really similar to what we have in hypo71 for those who are familiar with it. In details we specify the P-velocity at each user’s specified depth, then we give the Vp/Vs ratio, and then we specify the distance’s based weighting scheme used by the locator. In more simple way, we specify the weights of each arrivals based on the station-epicenter distance, the closer the station is, the more weight we put on the corresponding arrival.
+ One should understand that PSPicker is not only one single magic script that performs all the picking automatically. Of course `main.m` is intented to do that, but it can and should be changed to suit your need. PSPicker should be seen as a library of functions to automatically pick phase, reject mis-picks, compute amplitude.... Not all functions are directly useful for the user but some of them are really important.
+
+* **refine_PICKS**: Probably the most important function of the PSPicker library. It takes one single `EVENT` structure with preliminary location and picks and the `mainfile.txt` as input and outputs a new `EVENT` with updated picks and location. In details this is what `refine_PICKS` does:  
+	1. Relocate the event using `hyp` to compute theoretical P and S arrival times on all stations of the network.
+	2. Extract the MSEED files from the SDS to get a single MSEED file. This is performed by `sds2mseed`. 
+	3. Compute the Kurtosis on specified channels to find P and S picks. This is performed by `trace2FWkurto` and `follow_extrem2`.
+	4. Estimate weight for each picks based on SNR or Kurtosis value.
+	5. Relocate the event using newly defined automatic picks.  
+Note: No cleaning of mispicks is performed by `refine_PICKS`, this is done by `rmsta_EVENT` and `rmres_EVENT`.
+
+* **trace2FWkurto**: This function transforms any time series into Kurtosis Characteristic Functions (CFs). FW stand for Frequency/Window. Computation of this function is explained in [Baillard et al., 2014](http://www.bssaonline.org/content/104/1/394.short). To sum up, the Kurtosis is computed using all possible combinations of frequency and window sizes. Small windows will be more sensitive to small onsets but the resulting Kurtosis will be more noisy. The function outputs all possible combinations of Kurtosis CF but also the stack of all Kurtosis CFs. Picking the minimum (performed by `follow_extrem2` on the CF will be give you the expected phase onset. 
+ 
+* **follow_extrem2**: This function is `trace2FWkurto`'s best buddy! It takes all the CFs and picks the minimum on all CFs using a coarse to fine approach, i.e. it will first start to pick the minimum on the Kurtosis CF associated to the biggest window then it will track this minimum on subsequent Kurtosis CFs, to get a fine estimate of the onset.  
 
 
 # API description
