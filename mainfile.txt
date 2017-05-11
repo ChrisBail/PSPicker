@@ -52,9 +52,6 @@ weight_switch='SNR'
 # Define minimum number of ampltiudes to compute magnitude
 minphase_amp=3
 
-# Remove Old amplitudes in Amplitude picking mode
-Amplitude_remove=0
-
 # Frequencies: Second band has 10Hz low freq to avoid microseisms and strum
 A=[1 10]
 
