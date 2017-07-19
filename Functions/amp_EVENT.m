@@ -55,7 +55,7 @@ PickerParam=readmain(mainfile);
 
 %%% Get hypocenter path
 
-hyp=PickerParam.HYP;
+hyp=PickerParam.hyp;
 
 %%% Select stations to be processed for amplitudes
 
