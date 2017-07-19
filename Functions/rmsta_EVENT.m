@@ -30,7 +30,7 @@ end
 %%% Read mainfile
 
 PickerParam=readmain(mainfile);
-hyp=PickerParam.HYP;
+hyp=PickerParam.hyp;
 
 %%% Initialize
 

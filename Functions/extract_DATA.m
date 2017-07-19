@@ -14,7 +14,7 @@ function [DATA,S]=extract_DATA(EVENT,mainfile)
 
 PickerParam=readmain(mainfile);
 
-hyp=PickerParam.HYP;
+hyp=PickerParam.hyp;
 delay_before=PickerParam.Extract_time(1);
 delay_after=PickerParam.Extract_time(1);
 mseed_file='./tmp/cat.mseed';

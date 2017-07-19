@@ -106,7 +106,7 @@ for i=1:numel(files_nor)
             %%% Readmain
 
             PickerParam=readmain(mainfile{1}); 
-            hyp=PickerParam.HYP;
+            hyp=PickerParam.hyp;
             
             %%% Apply weight of 2 on all S by default
             
