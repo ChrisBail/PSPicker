@@ -14,6 +14,7 @@ PSPicker is a Matlab library designed to improve location of events by both refi
 
 * [HYPOCENTER](hypocenter.md)
 * [dataselect](dataselect.md)
+* [ObsPy](https://github.com/obspy/obspy/wiki) 
 
 # Get the Package
 
