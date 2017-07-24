@@ -15,8 +15,8 @@ function [DATA,S]=extract_DATA(EVENT,mainfile)
 PickerParam=readmain(mainfile);
 
 hyp=PickerParam.hyp;
-delay_before=PickerParam.Extract_time(1);
-delay_after=PickerParam.Extract_time(1);
+delay_before=PickerParam.extract_time(1);
+delay_after=PickerParam.extract_time(1);
 mseed_file='./tmp/cat.mseed';
 
 %%% Get List of stations to be processed from mainfile
