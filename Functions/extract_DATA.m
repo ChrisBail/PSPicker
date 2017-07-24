@@ -48,7 +48,7 @@ end_time_str=datestr(end_time,...
         'yyyy-mm-dd HH:MM:SS');    
 
 cmd=sprintf('-start "%s" -end "%s" -sta "%s" -comp "%s" -sds "%s" -o "%s"',...
-   start_time_str,end_time_str,stations_str,channels_str,PickerParam.SDS_path,mseed_file);
+   start_time_str,end_time_str,stations_str,channels_str,PickerParam.sds_path,mseed_file);
 
 [~,~]=system(['./Functions/sds2mseed.sh',' ',cmd]);
 movefile('scratch.file','./tmp/scratch.file');
