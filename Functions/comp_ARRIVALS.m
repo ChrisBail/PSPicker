@@ -50,7 +50,7 @@ end
 
 model_file=['STATION',mod_name,'.HYP'];
 
-if isempty(dir(fullfile('./',model_file)))
+if isempty(dir(fullfile('../',model_file)))
     error('No %s file in current directory, impossible to invert.',model_file);
 else
     station_list=read_STATION0HYP(model_file);
