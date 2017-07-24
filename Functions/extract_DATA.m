@@ -8,7 +8,7 @@
 %     DATA
 %     S
 
-function [DATA,S]=extract_DATA(EVENT,mainfile)
+function [DATA,S]=extract_DATA(EVENT,mainfile,show)
 
 %%% Get path and paramters
 
@@ -29,7 +29,7 @@ channels_str=strjoin(channels);
 
 %%% Compute theo
 
-EVENT=comp_THEO(hyp,EVENT);
+EVENT=comp_THEO(hyp,EVENT,show);
 
 %%% Only get stations referenced in Parameter file
 

@@ -53,6 +53,7 @@ model_file=['STATION',mod_name,'.HYP'];
 if isempty(dir(fullfile('../',model_file)))
     error('No %s file in current directory, impossible to invert.',model_file);
 else
+    copyfile(['../',model_file],['./',model_file])
     station_list=read_STATION0HYP(model_file);
     station_list={station_list{:,1}}';
 end

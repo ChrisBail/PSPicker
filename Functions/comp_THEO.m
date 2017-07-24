@@ -1,7 +1,7 @@
 % function made to compute the synthetic given an event stored in the strcuture 
 % given by read_EVENTS()
 
-function new_event=comp_THEO(hyp,event)
+function new_event=comp_THEO(hyp,event,show)
 
 %%% Start process
 
@@ -24,7 +24,7 @@ event2nor(event,sfile_input);
 
 %%% Compute synthetics
 
-comp_ARRIVALS(hyp,sfile_input,sfile_output,0)
+comp_ARRIVALS(hyp,sfile_input,sfile_output,show)
 
 %%% Read sfile
 
