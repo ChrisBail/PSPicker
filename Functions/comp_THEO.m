@@ -5,13 +5,13 @@ function new_event=comp_THEO(hyp,event)
 
 %%% Start process
 
-if ~exist('hyp','dir')
-    mkdir('hyp');
+if ~exist('hyp_tmp','dir')
+    mkdir('hyp_tmp');
 end
 
 %%% Go into hyp/ dir to avoid stuffing current dir
 
-cd('hyp');
+cd('hyp_tmp');
 
 %%% Define input_output files
 
