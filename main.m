@@ -115,7 +115,7 @@ for i=1:numel(files_nor)
 
             %%% 2) Extract Data (nood really need, only for plotting)
 
-            [DATA,S]=extract_DATA(EVENT,mainfile{1});
+            [DATA,S]=extract_DATA(EVENT,mainfile{1},0);
             if debug; plot_DATA(S);keyboard;end
 
             %%% 3) Clean event and relocate
