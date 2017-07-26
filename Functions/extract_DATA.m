@@ -53,7 +53,9 @@ end_time_str=datestr(end_time,...
 cmd=sprintf('-start "%s" -end "%s" -sta "%s" -comp "%s" -sds "%s" -o "%s"',...
    start_time_str,end_time_str,stations_str,channels_str,PickerParam.sds_path,mseed_file);
 
-[error_flag,~]=system(['sds2mseed.sh',' ',cmd]);
+
+locate_sds=which('sds2mseed.sh');
+[error_flag,~]=system([locate_sds,' ',cmd]);
 if error_flag
     fprintf(1,'No data found in %s for %s <= time < %s\n',PickerParam.sds_path, start_time_str,end_time_str);
     return
