@@ -31,7 +31,10 @@ global PickerParam
 %%%%%% Get nordic %%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-PickerParam=readmain(mainfile{1}); 
+[PickerParam,flag_path]=readmain(mainfile{1}); 
+if flag_path==0
+    return
+end
 pz_file=PickerParam.station_PZ;
 input_nordic=PickerParam.input_nordic;
 
