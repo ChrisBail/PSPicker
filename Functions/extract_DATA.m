@@ -17,7 +17,7 @@ PickerParam=readmain(mainfile);
 hyp=PickerParam.hyp;
 delay_before=PickerParam.extract_time(1);
 delay_after=PickerParam.extract_time(1);
-mseed_file='./tmp/cat.mseed';
+mseed_file='cat.mseed';
 DATA=[];
 S=[];
 
@@ -60,13 +60,14 @@ if error_flag
     fprintf(1,'No data found in %s for %s <= time < %s\n',PickerParam.sds_path, start_time_str,end_time_str);
     return
 end
+movefile(mseed_file,'./tmp/cat.mseed');
 movefile('scratch.file','./tmp/scratch.file');
 
 %%%%%%%%%%%%%%%%%%
 %%% Read file %%%%
 %%%%%%%%%%%%%%%%%%
 
-X=rdmseed(mseed_file);
+X=rdmseed('./tmp/cat.mseed');
 S=get_DATA(X);
 DATA=S.DATA;
 S.EVENTS=EVENT;
