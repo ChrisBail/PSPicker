@@ -52,8 +52,8 @@ end
 
 %%% Create tmp directory for all tmp files
 
-if ~exist('tmp')
-    mkdir('tmp');
+if ~exist('./tmp')
+    mkdir('./tmp');
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,7 +115,10 @@ for i=1:numel(files_nor)
 
             %%% 2) Extract Data (nood really need, only for plotting)
 
-            [DATA,S]=extract_DATA(EVENT,mainfile{1},0);
+            [DATA,S]=extract_DATA(EVENT,mainfile{1},debug);
+            if isempty(DATA)
+                continue
+            end
             if debug; plot_DATA(S);keyboard;end
 
             %%% 3) Clean event and relocate

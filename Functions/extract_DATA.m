@@ -18,6 +18,9 @@ hyp=PickerParam.hyp;
 delay_before=PickerParam.extract_time(1);
 delay_after=PickerParam.extract_time(1);
 mseed_file='./tmp/cat.mseed';
+DATA=[];
+S=[];
+
 
 %%% Get List of stations to be processed from mainfile
 
@@ -50,7 +53,11 @@ end_time_str=datestr(end_time,...
 cmd=sprintf('-start "%s" -end "%s" -sta "%s" -comp "%s" -sds "%s" -o "%s"',...
    start_time_str,end_time_str,stations_str,channels_str,PickerParam.sds_path,mseed_file);
 
-[~,~]=system(['sds2mseed.sh',' ',cmd]);
+[error_flag,~]=system(['sds2mseed.sh',' ',cmd]);
+if error_flag
+    fprintf(1,'No data found in %s for %s <= time < %s\n',PickerParam.sds_path, start_time_str,end_time_str);
+    return
+end
 movefile('scratch.file','./tmp/scratch.file');
 
 %%%%%%%%%%%%%%%%%%
