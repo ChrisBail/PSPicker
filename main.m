@@ -126,7 +126,7 @@ for i=1:numel(files_nor)
 
             %%% 3) Clean event and relocate
 
-            [EVENT_B,a,b]=rmsta_EVENT(EVENT,mainfile{1},mstan,limit_pha,limit_dev,0);
+            [EVENT_B,a,b]=rmsta_EVENT(EVENT,mainfile{1},mstan,limit_pha,limit_dev,0,debug);
             EVENT_C=rmres_EVENT(EVENT_B,rms_thres,hyp);
             if isempty(EVENT_C.LON)
                 continue
@@ -148,7 +148,7 @@ for i=1:numel(files_nor)
                 %%%  Clean event and relocate
 
                 EVENT_D=S.EVENTS;
-                [EVENT_E,station_reject,new_res]=rmsta_EVENT(EVENT_D,mainfile{k},mstan,limit_pha,limit_dev,1);
+                [EVENT_E,station_reject,new_res]=rmsta_EVENT(EVENT_D,mainfile{k},mstan,limit_pha,limit_dev,1,debug);
                 EVENT_F=rmres_EVENT(EVENT_E,rms_thres,hyp);
          
                 if isempty(EVENT_F.LON)
