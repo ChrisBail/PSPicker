@@ -11,7 +11,7 @@
 %     OUT: EVENT structure with bad phases put to 4;
 % 
 
-function OUT=rmres_EVENT(IN,rms_thres,hyp)
+function OUT=rmres_EVENT(IN,rms_thres,hyp,show)
 
 %%% Initialize OUT EVENT structure
 
@@ -49,7 +49,7 @@ for i=1:numel(IN)
     
     %%% Recompute the event
     
-    EVENT=comp_THEO(hyp,EVENT);
+    EVENT=comp_THEO(hyp,EVENT,show);
     
     %%% Store
     

@@ -96,7 +96,7 @@ else
     station_reject=station_list(ind_sta);
 end
 
-OUT=comp_THEO(hyp,new_EVENT);
+OUT=comp_THEO(hyp,new_EVENT,show);
 
 if flag_plot
    figure
