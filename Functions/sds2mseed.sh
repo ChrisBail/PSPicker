@@ -201,8 +201,8 @@ dataselect_end=`date -d "$end_time" "+%Y.$julian_day_end.%H.%M.%S"`
 
 # Mac platform 
 
-#dataselect_start=`date -j -f "%Y %m %d %H:%M:%S" "$start_time" "+%Y.$julian_day_start.%H.%M.%S"`
-#dataselect_end=`date -j -f "%Y %m %d %H:%M:%S" "$end_time" "+%Y.$julian_day_end.%H.%M.%S"`
+#dataselect_start=`date -j -f "%Y-%m-%d %H:%M:%S" "$start_time" "+%Y.$julian_day_start.%H.%M.%S"`
+#dataselect_end=`date -j -f "%Y-%m-%d %H:%M:%S" "$end_time" "+%Y.$julian_day_end.%H.%M.%S"`
 
 #echo "dataselect @$list_file -ts "$dataselect_start" -te "$dataselect_end" -o cat.mseed"
 dataselect @$list_file -ts "$dataselect_start" -te "$dataselect_end" -o $output
