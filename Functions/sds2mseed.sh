@@ -159,14 +159,16 @@ for (( j=year_start; j<=year_end; j++ )); do
 		end_day=365
 	else
 		end_day=julian_day_end
+		end_day=` echo $julian_day_end | sed 's/^0*//' `
 	fi
 	if [ $j != $year_start ]; then
 		first_day=1
 	else
 		first_day=julian_day_start
+		first_day=` echo $julian_day_start | sed 's/^0*//' `
 	fi
- 
-	for ((i=first_day; i<=end_day; i++)); do 
+	for ((i=first_day; i<=end_day; i++)); do
+		i3=` echo $i | awk '{printf "%03.0f", $1}' `
 		# Write path to data
 		for station_s in "${station[@]}"; do 
 		
@@ -175,7 +177,7 @@ for (( j=year_start; j<=year_end; j++ )); do
 				for network_s in "${network[@]}"; do 
 			
 					declare -a data_path=(`printf "%s%s/%s/%s/%s.D/" $sds_path $j "$network_s" "$station_s" "$comp_s"`)
-					wav_name=`printf "*%s.%s" $j $i`
+					wav_name=`printf "*%s.%s" $j $i3`
 					for data_path in "${data_path[@]}"; do
 					#echo "$station"
 					# define wav name and check if exist
